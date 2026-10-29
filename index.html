@@ -489,42 +489,32 @@ const CATS = [
   { id: 's-flamenco', k: 'song', name: 'Flamenco y rumba', short: 'Flamenco', blurb: 'Palmas en el salón', wg: /flamenco|world|mundo/,
     src: L(`Camarón de la Isla|Paco de Lucía|Estrella Morente|Niña Pastori|Los Chunguitos|Peret|Gipsy Kings|Rosario|Chambao|Diego el Cigala|Las Grecas|El Barrio|Pitingo|Arcángel|Miguel Poveda|Antonio Carmona|Pata Negra|Kiko Veneno|Bambino|Lola Flores|Rocío Jurado|Raimundo Amador|Tomatito|Remedios Amaya|Delinqüentes|India Martínez|Lin Cortés|Manzanita|Siempre Así|Las Migas`) },
 
-  { id: 'm-accion', k: 'movie', name: 'Acción y aventura', short: 'Acción', blurb: 'Palomitas a lo grande',
-    dg: /action|accion|aventur|adventure|sci fi|ciencia|fantas|thrill|suspens/, wg: /action|accion|aventur|adventure/,
-    src: L(`Christopher Nolan|James Cameron|Steven Spielberg|Ridley Scott|Denis Villeneuve|Christopher McQuarrie|Chad Stahelski|George Miller|Michael Bay|Tony Scott|John McTiernan|Joseph Kosinski|Doug Liman|Martin Campbell|Sam Raimi|Jon Favreau|Peter Jackson|Gore Verbinski|Matthew Vaughn|Guy Ritchie|David Leitch|J.J. Abrams|Justin Lin|Kathryn Bigelow|Paul Greengrass|Antoine Fuqua|Roland Emmerich|Robert Zemeckis|Anthony Russo|James Gunn|Zack Snyder|Jaume Collet-Serra|F. Gary Gray|Jon Watts|Taika Waititi|Patty Jenkins`) },
-  { id: 'm-comedia', k: 'movie', name: 'Comedia', short: 'Comedia', blurb: 'Para reír hasta llorar', dg: /comed/, wg: /comed/,
-    src: L(`Judd Apatow|Adam McKay|Todd Phillips|Paul Feig|Nancy Meyers|Richard Curtis|Edgar Wright|Wes Anderson|Taika Waititi|Jay Roach|Peter Farrelly|Ben Stiller|Harold Ramis|Ivan Reitman|John Hughes|Chris Columbus|Greg Mottola|Shawn Levy|Dennis Dugan|Frank Oz|Rob Reiner|Nora Ephron|Garry Marshall|Woody Allen|Santiago Segura|Javier Fesser|Emilio Martínez-Lázaro|Borja Cobeaga|Paco León|Nacho G. Velilla|Olivier Nakache|Dany Boon|Philippe de Chauveron|Jonathan Levine|Will Gluck|Rawson Marshall Thurber|Jake Kasdan|Seth Gordon`) },
-  { id: 'm-romance', k: 'movie', name: 'Romance', short: 'Romance', blurb: 'De las de cogerse de la mano',
-    dg: /romanc|romant|comed|drama/, wg: /romanc|romant/,
-    src: L(`Richard Curtis|Nancy Meyers|Nora Ephron|Garry Marshall|Nick Cassavetes|Richard Linklater|Joe Wright|Rob Reiner|Marc Webb|Damien Chazelle|Luca Guadagnino|Baz Luhrmann|Lasse Hallström|Michael Showalter|Jon M. Chu|Sofia Coppola|Wong Kar-wai|Céline Sciamma|Jean-Pierre Jeunet|Fernando González Molina|Mark Waters|Adam Shankman|Anne Fletcher|Ken Kwapis|Gary Winick|Lone Scherfig|Josh Boone|Andy Tennant|Drake Doremus|Mike Newell|Roger Michell|Nicholas Stoller|Dani de la Orden|Thea Sharrock`) },
-  { id: 'm-drama', k: 'movie', name: 'Drama', short: 'Drama', blurb: 'Para emocionarse juntos', dg: /drama|independ/, wg: /drama/,
-    src: L(`Martin Scorsese|Clint Eastwood|Ron Howard|Frank Darabont|Sam Mendes|Danny Boyle|Alejandro González Iñárritu|Alfonso Cuarón|Pedro Almodóvar|Paolo Sorrentino|Ang Lee|Barry Jenkins|Kenneth Lonergan|Tom McCarthy|Todd Field|Greta Gerwig|Noah Baumbach|Steve McQueen|Paul Thomas Anderson|Darren Aronofsky|Bennett Miller|Lenny Abrahamson|Jean-Marc Vallée|Tom Hooper|Stephen Daldry|Gus Van Sant|Jim Sheridan|Ken Loach|Asghar Farhadi|Hirokazu Kore-eda|Juan José Campanella|Bong Joon Ho|Florian Zeller|Martin McDonagh|Sian Heder|Chloé Zhao`) },
-  { id: 'm-thriller', k: 'movie', name: 'Thriller y suspense', short: 'Thriller', blurb: 'Para no mirar el móvil',
-    dg: /thrill|suspens|crime|crimen|myster|misterio|polic|drama|action|accion|horror|terror/, wg: /thrill|suspens|crime|crimen|myster|misterio/,
-    src: L(`David Fincher|Alfred Hitchcock|Denis Villeneuve|Brian De Palma|Jonathan Demme|Bong Joon Ho|Park Chan-wook|M. Night Shyamalan|Rodrigo Sorogoyen|Oriol Paulo|Alberto Rodríguez|Daniel Monzón|Enrique Urbizu|Rian Johnson|Ben Affleck|Curtis Hanson|Michael Mann|Sidney Lumet|Roman Polanski|Adrian Lyne|Paul Verhoeven|Jordan Peele|Taylor Sheridan|Nicolas Winding Refn|Steven Soderbergh|Tony Gilroy|Joel Coen|Fernando Meirelles|Luc Besson|Bryan Singer|Christopher Nolan|Wolfgang Petersen|Dan Gilroy|Jeremy Saulnier`) },
-  { id: 'm-terror', k: 'movie', name: 'Terror', short: 'Terror', blurb: 'Para ver con la luz encendida',
-    dg: /horror|terror|thrill|suspens|myster|misterio/, wg: /horror|terror/,
-    src: L(`James Wan|Mike Flanagan|Ari Aster|Jordan Peele|Robert Eggers|John Carpenter|Wes Craven|Sam Raimi|Guillermo del Toro|Juan Antonio Bayona|Jaume Balagueró|Paco Plaza|Alejandro Amenábar|Andy Muschietti|Fede Álvarez|Scott Derrickson|David F. Sandberg|Leigh Whannell|Ti West|Jennifer Kent|Osgood Perkins|Zach Cregger|Eli Roth|Tobe Hooper|William Friedkin|Hideo Nakata|Alexandre Aja|Jaume Collet-Serra|Nacho Vigalondo|Rodrigo Cortés|Kike Maíllo|Gore Verbinski|Stanley Kubrick|Roman Polanski`) },
-  { id: 'm-scifi', k: 'movie', name: 'Ciencia ficción y fantasía', short: 'Ciencia ficción', blurb: 'Otros mundos, mismo sofá',
-    dg: /sci fi|scifi|ciencia|fantas|action|accion|aventur|adventure/, wg: /sci fi|scifi|ciencia|fantas/,
-    src: L(`Denis Villeneuve|Christopher Nolan|Ridley Scott|James Cameron|Steven Spielberg|Peter Jackson|George Lucas|Alex Garland|Duncan Jones|Neill Blomkamp|Rian Johnson|J.J. Abrams|Robert Zemeckis|Lana Wachowski|Terry Gilliam|Luc Besson|Guillermo del Toro|Alfonso Cuarón|Spike Jonze|Michel Gondry|Andrew Niccol|Paul Verhoeven|John Carpenter|Chris Columbus|David Yates|Tim Burton|Joseph Kosinski|Gareth Edwards|Matt Reeves|Rupert Wyatt|Jeff Nichols|Brad Bird|Doug Liman|Morten Tyldum|Jon Favreau`) },
-  { id: 'm-animacion', k: 'movie', name: 'Animación y familia', short: 'Animación', blurb: 'Pixar, Disney, Ghibli y compañía',
-    dg: /anima|kids|famil|infantil|nino/, wg: /anima|kids|famil|infantil/,
-    src: L(`Pete Docter|John Lasseter|Brad Bird|Andrew Stanton|Lee Unkrich|Hayao Miyazaki|Chris Buck|Byron Howard|Rich Moore|Ron Clements|Chris Sanders|Dean DeBlois|Andrew Adamson|Pierre Coffin|Chris Renaud|Mike Mitchell|Kirk DeMicco|Nick Park|Henry Selick|Phil Lord|Domee Shi|Enrico Casarosa|Dan Scanlon|Peter Sohn|Jared Bush|Don Hall|Tom McGrath|Eric Darnell|Carlos Saldanha|Chris Wedge|Joel Crawford|Paul King|Genndy Tartakovsky|Isao Takahata|Makoto Shinkai|Tomm Moore|Mamoru Hosoda`) },
-  { id: 'm-espanol', k: 'movie', name: 'Cine español', short: 'Cine español', blurb: 'De Almodóvar a Sorogoyen',
-    src: L(`Pedro Almodóvar|Alejandro Amenábar|Juan Antonio Bayona|Rodrigo Sorogoyen|Javier Fesser|Isabel Coixet|Icíar Bollaín|Fernando Trueba|Álex de la Iglesia|Daniel Monzón|Alberto Rodríguez|Fernando León de Aranoa|Carla Simón|Oriol Paulo|Daniel Sánchez Arévalo|Emilio Martínez-Lázaro|Santiago Segura|Borja Cobeaga|Paco León|Cesc Gay|Julio Medem|Benito Zambrano|Montxo Armendáriz|José Luis Cuerda|Luis García Berlanga|Carlos Saura|Víctor Erice|Pilar Miró|Fernando Colomo|Gracia Querejeta|Agustí Villaronga|Jaime Rosales|Manuel Martín Cuenca|Jonás Trueba|Paula Ortiz|Dani de la Torre|Enrique Urbizu|Rodrigo Cortés|Jaume Balagueró|Paco Plaza|Juanma Bajo Ulloa|Mariano Barroso|David Trueba|Achero Mañas|Daniel Calparsoro|Juan Carlos Fresnadillo|Kike Maíllo|Nacho G. Velilla`) },
-  { id: 'm-clasicos', k: 'movie', name: 'Clásicos', short: 'Clásicos', blurb: 'Las que siempre decís que veréis', maxYear: 1995,
-    src: L(`Alfred Hitchcock|Billy Wilder|Stanley Kubrick|Francis Ford Coppola|Martin Scorsese|Steven Spielberg|Orson Welles|John Ford|Frank Capra|Michael Curtiz|David Lean|William Wyler|Elia Kazan|Sidney Lumet|Charles Chaplin|Fred Zinnemann|George Cukor|Howard Hawks|Ernst Lubitsch|Joseph L. Mankiewicz|Blake Edwards|Mike Nichols|Milos Forman|Robert Wise|Stanley Donen|John Huston|Sergio Leone|Federico Fellini|Akira Kurosawa|François Truffaut|Woody Allen|George Roy Hill|Richard Donner|Rob Reiner|Robert Zemeckis|Sydney Pollack|Luis Buñuel|Luis García Berlanga|Ridley Scott|James Cameron`) },
-  { id: 'm-musicales', k: 'movie', name: 'Musicales', short: 'Musicales', blurb: 'Para cantar en el sofá', wg: /music/,
-    src: L(`Damien Chazelle|Baz Luhrmann|Rob Marshall|Bill Condon|Tom Hooper|Michael Gracey|Jon M. Chu|Phyllida Lloyd|Adam Shankman|Kenny Ortega|Alan Parker|Bob Fosse|Robert Wise|Stanley Donen|Vincente Minnelli|Randal Kleiser|John Carney|Dexter Fletcher|Julie Taymor|Jason Moore|Emile Ardolino|Herbert Ross|Joel Schumacher|Ol Parker|Jacques Demy|Gene Kelly|George Sidney|Joshua Logan|Carlos Saura|Anne Fletcher`) },
+  // Pelis: Apple ya no devuelve películas en su buscador, así que salen de sus listas de más vistas por género.
+  { id: 'p-accion', k: 'movie', g: 4401, name: 'Acción y aventura', short: 'Acción', blurb: 'Palomitas a lo grande' },
+  { id: 'p-comedia', k: 'movie', g: 4404, name: 'Comedia', short: 'Comedia', blurb: 'Para reír hasta llorar' },
+  { id: 'p-romance', k: 'movie', g: 4412, name: 'Romance', short: 'Romance', blurb: 'De las de cogerse de la mano' },
+  { id: 'p-drama', k: 'movie', g: 4406, name: 'Drama', short: 'Drama', blurb: 'Para emocionarse juntos' },
+  { id: 'p-thriller', k: 'movie', g: 4416, name: 'Thriller y suspense', short: 'Thriller', blurb: 'Para no mirar el móvil' },
+  { id: 'p-terror', k: 'movie', g: 4408, name: 'Terror', short: 'Terror', blurb: 'Para ver con la luz encendida' },
+  { id: 'p-scifi', k: 'movie', g: 4413, name: 'Ciencia ficción y fantasía', short: 'Ciencia ficción', blurb: 'Otros mundos, mismo sofá' },
+  { id: 'p-familia', k: 'movie', g: 4410, name: 'Familia y animación', short: 'Familia', blurb: 'Animación y pelis para todos' },
+  { id: 'p-anime', k: 'movie', g: 4402, name: 'Anime', short: 'Anime', blurb: 'De Ghibli a lo último de Japón' },
+  { id: 'p-clasicos', k: 'movie', g: 4403, name: 'Clásicos', short: 'Clásicos', blurb: 'Las que siempre decís que veréis' },
+  { id: 'p-musicales', k: 'movie', g: 4411, name: 'Musicales', short: 'Musicales', blurb: 'Para cantar en el sofá' },
+  { id: 'p-docu', k: 'movie', g: 4405, name: 'Documentales', short: 'Documentales', blurb: 'Historias reales para comentar' },
+  { id: 'p-indie', k: 'movie', g: 4409, name: 'Cine independiente', short: 'Independiente', blurb: 'Joyas fuera del circuito' },
 ];
 const CAT = Object.fromEntries(CATS.map(c => [c.id, c]));
 // Mazos de la primera versión → categoría en la que aparecen sus cartas
 const LEGACY = { gritos: 's-pop', popes: 's-popes', ahora: 's-pop', indie: 's-indie', rock: 's-rock', latino: 's-latino', sofa: 's-acustico', bso: 's-bso',
-  palomitas: 'm-accion', risas: 'm-comedia', romance: 'm-romance', clasicos: 'm-clasicos', espanol: 'm-espanol', intriga: 'm-thriller', animacion: 'm-animacion' };
+  palomitas: 'p-accion', risas: 'p-comedia', romance: 'p-romance', clasicos: 'p-clasicos', espanol: 'p-drama', intriga: 'p-thriller', animacion: 'p-familia' };
+// Categorías de pelis de la versión anterior (no llegaron a cargar nada) → las nuevas
+const CAT_ALIAS = { 'm-accion': 'p-accion', 'm-comedia': 'p-comedia', 'm-romance': 'p-romance', 'm-drama': 'p-drama', 'm-thriller': 'p-thriller', 'm-terror': 'p-terror',
+  'm-scifi': 'p-scifi', 'm-animacion': 'p-familia', 'm-espanol': 'p-drama', 'm-clasicos': 'p-clasicos', 'm-musicales': 'p-musicales' };
+const catId = id => CAT[id] ? id : (CAT[CAT_ALIAS[id]] ? CAT_ALIAS[id] : null);
+const MOVIE_CC = ['es', 'mx', 'ar', 'co', 'cl', 'us', 'gb'];   // España primero; luego títulos latinoamericanos e ingleses
 const WORDS = {
   song: L(`amor|love|noche|night|corazón|heart|baby|vida|life|sol|fuego|fire|bailar|dance|sueño|dream|luna|moon|mar|ocean|cielo|sky|tiempo|time|loco|crazy|beso|kiss|calle|street|verano|summer|lluvia|rain|alma|soul|casa|home|mundo|world|libre|free|siempre|forever|solo|alone|juntos|together|camino|road|luz|light|ciudad|city|estrella|star|azul|blue|oro|gold|chica|girl|chico|boy|hoy|tonight|mañana|tomorrow|fiesta|party|canción|song|paraíso|paradise|ángel|angel|diablo|devil|dinero|money|rey|king|reina|queen|guerra|war|paz|peace|agua|water|viento|wind|flor|flower|bonita|beautiful|sentir|feel|correr|run|volar|fly|final|end|mentira|lie|verdad|truth|frío|cold|calor|heat|madrid|california|domingo|sunday|recuerdo|memory`),
-  movie: L(`amor|love|noche|night|muerte|death|casa|house|guerra|war|vida|life|hombre|man|mujer|woman|ciudad|city|rey|king|sangre|blood|sombra|shadow|secreto|secret|mundo|world|familia|family|perdido|lost|último|last|juego|game|oscuro|dark|tierra|earth|mar|sea|cielo|heaven|infierno|hell|fuego|fire|hielo|ice|estrella|star|sol|sun|luna|moon|día|day|tiempo|time|misión|mission|viaje|journey|camino|road|calle|street|isla|island|fantasma|ghost|monstruo|monster|venganza|revenge|corazón|heart|sueño|dream|hijo|son|hija|daughter|padre|father|madre|mother|hermano|brother|boda|wedding|navidad|christmas|verano|summer|escuela|school|policía|police|agente|agent|código|code|planeta|planet|robot|dragón|dragon|princesa|princess|bosque|forest|niño|kid|chica|girl|asesino|killer|diablo|devil|ángel|angel`),
 };
 
 const IC = {
@@ -637,13 +627,13 @@ const savePrefs = () => store.set('prefs', prefs);
 function jsonp(path, params) {
   return new Promise((resolve, reject) => {
     const cb = '__aduo_' + rid(10);
-    const usp = new URLSearchParams({ ...params, country: COUNTRY, callback: cb });
+    const usp = new URLSearchParams({ country: COUNTRY, ...params, callback: cb });
     const s = document.createElement('script');
     let settled = false;
     const finish = (fn, v) => { if (settled) return; settled = true; clearTimeout(timer); window[cb] = () => {}; s.remove(); fn(v); };
     window[cb] = data => finish(resolve, data);
     s.onerror = () => {
-      const plain = new URLSearchParams({ ...params, country: COUNTRY });
+      const plain = new URLSearchParams({ country: COUNTRY, ...params });
       fetch(ITUNES + path + '?' + plain).then(r => { if (!r.ok) throw new Error('http ' + r.status); return r.json(); })
         .then(d => finish(resolve, d), e => finish(reject, e));
     };
@@ -652,8 +642,13 @@ function jsonp(path, params) {
     document.head.appendChild(s);
   });
 }
+function fetchJson(url) {
+  const ctl = new AbortController(); const t = setTimeout(() => ctl.abort(), 15000);
+  return fetch(url, { signal: ctl.signal }).then(r => { if (!r.ok) { const e = new Error('http ' + r.status); e.status = r.status; throw e; } return r.json(); }).finally(() => clearTimeout(t));
+}
 const apiQueue = [];
 let apiCalls = 0;
+function apiFeed(path) { return new Promise((resolve, reject) => { apiQueue.push({ url: ITUNES + path, resolve, reject, tries: 0 }); pumpApi(); }); }
 let apiLast = 0, apiPenalty = 0, apiPumping = false;
 function api(path, params, { priority = false, stale = null } = {}) {
   return new Promise((resolve, reject) => {
@@ -671,8 +666,9 @@ async function pumpApi() {
     const job = apiQueue.shift();
     if (job.stale && job.stale()) { job.reject(new Error('stale')); continue; }
     apiLast = Date.now(); apiCalls++;
-    try { job.resolve(await jsonp(job.path, job.params)); apiPenalty = Math.max(0, apiPenalty - 3000); }
+    try { job.resolve(await (job.url ? fetchJson(job.url) : jsonp(job.path, job.params))); apiPenalty = Math.max(0, apiPenalty - 3000); }
     catch (e) {
+      if (e && e.status >= 400 && e.status < 500 && e.status !== 429) { job.reject(e); continue; }   // no existe: no tiene sentido reintentar
       job.tries++; apiPenalty = Math.min(30000, apiPenalty + 9000);
       if (job.tries < 3) apiQueue.splice(job.stale ? 0 : apiQueue.length, 0, job); else job.reject(e);
     }
@@ -720,7 +716,6 @@ function cacheSet(k, v) { store.set('c:' + k, { t: Date.now(), v }); }
 
 const BAD_SONG = /(\blive\b|en directo|en vivo|remix|karaoke|instrumental version|\bdemo\b|ac[uú]stic|acoustic|radio edit|medley|commentary|interview|sped up|slowed)/i;
 const baseTitle = t => norm(String(t).replace(/\s*[\(\[].*?[\)\]]/g, '').replace(/\s+-\s+.*$/, ''));
-const movieKey = t => norm(String(t).replace(/\s*[\(\[].*?[\)\]]/g, ''));
 const surname = name => { const w = norm(name).split(' ').filter(x => x.length >= 3); return w.length ? w[w.length - 1] : norm(name); };
 
 // Una sola petición por artista o director: se guarda la promesa (y en el navegador, el resultado).
@@ -749,22 +744,48 @@ function resolveArtist(artist) {
     return out;
   });
 }
-function resolveDirector(name) {
-  return cached('d:' + norm(name), async () => {
-    const want = surname(name);
-    const pick = data => {
-      const seen = new Set(), withTrailer = [], without = [];
-      for (const r of (data && data.results) || []) {
-        if (r.kind !== 'feature-movie' || !norm(r.artistName).includes(want)) continue;
-        const key = movieKey(r.trackName); if (!key || seen.has(key)) continue; seen.add(key);
-        const it = fromApi(r); if (it) (it.prev ? withTrailer : without).push(it);
-      }
-      return withTrailer.concat(without).slice(0, 30);
-    };
-    let out = pick(await api('search', { term: name, media: 'movie', entity: 'movie', attribute: 'directorTerm', limit: 50 }));
-    if (!out.length) out = pick(await api('search', { term: name, media: 'movie', entity: 'movie', limit: 50 }));
-    return out;
+function fromRss(e) {
+  try {
+    const links = Array.isArray(e.link) ? e.link : [e.link];
+    const prev = links.find(l => l && l.attributes && l.attributes['im:assetType'] === 'preview');
+    const page = links.find(l => l && l.attributes && l.attributes.rel === 'alternate');
+    const imgs = e['im:image'] || [];
+    return cleanItem({ id: 'm' + e.id.attributes['im:id'], title: e['im:name'].label, by: e['im:artist'] && e['im:artist'].label,
+      year: ((e['im:releaseDate'] && e['im:releaseDate'].label) || '').slice(0, 4),
+      genre: e.category && e.category.attributes && e.category.attributes.label,
+      art: imgs.length ? imgs[imgs.length - 1].label : '', prev: prev ? prev.attributes.href : '', url: page ? page.attributes.href : '',
+      desc: e.summary && e.summary.label, rating: '' });
+  } catch { return null; }
+}
+function rssList(cc, g) {
+  return cached(`r:${cc}:${g}:${new Date().toISOString().slice(0, 10)}`, async () => {
+    try {
+      const data = await apiFeed(`${cc}/rss/topmovies/limit=200/genre=${g}/json`);
+      const e = data && data.feed && data.feed.entry;
+      return (Array.isArray(e) ? e : e ? [e] : []).map(fromRss).filter(Boolean);
+    } catch (err) { if (cc === MOVIE_CC[0]) throw err; return []; }
   });
+}
+// Una peli que sale en varias tiendas (con títulos distintos) se reconoce por director + año.
+const movieKeyOf = it => it.by ? norm(it.by) + '|' + it.year : 'id:' + it.id;
+const movieMemo = new Map();
+async function moviePage(cat, n) {
+  const PER = 4, seen = new Set(); let k = n;
+  for (const cc of MOVIE_CC) {
+    const key = S.code + '|' + cat.id + '|' + cc;
+    let list = movieMemo.get(key);
+    if (!list) {
+      const raw = chunkShuffle(await rssList(cc, cat.g), key, 6);
+      list = []; const local = new Set();
+      for (const it of raw) { const mk = movieKeyOf(it); if (seen.has(mk) || local.has(mk)) continue; local.add(mk); list.push(it); }
+      movieMemo.set(key, list);
+    }
+    for (const it of list) seen.add(movieKeyOf(it));
+    const chunks = Math.ceil(list.length / PER);
+    if (k < chunks) return list.slice(k * PER, k * PER + PER);
+    k -= chunks;
+  }
+  return null;
 }
 
 /* ---- Generador de páginas (mismo resultado en los dos móviles) ---- */
@@ -789,7 +810,7 @@ function chunkShuffle(arr, seed, size) {
 const orderMemo = new Map();
 function orderFor(key, arr, size) { if (!orderMemo.has(key)) orderMemo.set(key, chunkShuffle(arr, key, size)); return orderMemo.get(key); }
 const srcOrder = cat => orderFor(S.code + '|s|' + cat.id, cat.src, 8);       // los más conocidos siguen saliendo antes
-const wordOrder = cat => orderFor(S.code + '|w|' + cat.id, WORDS[cat.k], 9999);
+const wordOrder = cat => orderFor(S.code + '|w|' + cat.id, WORDS.song, 9999);
 
 const ROUND = 3, ROUNDS = 5, WORD_TAKE = 6, PASSES = 3, TARGET = 10;
 function planPage(cat, n) {
@@ -806,21 +827,25 @@ function passCat(cat, it, rx) {
   if (cat.maxYear && (+it.year || 9999) > cat.maxYear) return false;
   return true;
 }
-async function buildPage(cat, plan, n) {
+async function buildPage(cat, n) {
+  if (cat.k === 'movie') {
+    const list = await moviePage(cat, n);
+    return list && list.map((it, i) => ({ ...it, p: 0, o: n * 10 + i, src: cat.id }));
+  }
+  const plan = planPage(cat, n);
+  if (!plan) return null;
   let list = [];
   if (plan.stage === 1) {
-    const all = await (cat.k === 'song' ? resolveArtist(plan.who) : resolveDirector(plan.who));
-    list = all.filter(it => passCat(cat, it, cat.dg)).slice(plan.round * ROUND, plan.round * ROUND + ROUND);
+    list = (await resolveArtist(plan.who)).slice(plan.round * ROUND, plan.round * ROUND + ROUND);
   } else {
-    const params = cat.k === 'song' ? { term: plan.word, media: 'music', entity: 'song', limit: 50 } : { term: plan.word, media: 'movie', entity: 'movie', limit: 50 };
+    const params = { term: plan.word, media: 'music', entity: 'song', limit: 50 };
     if (plan.pass) params.offset = plan.pass * 50;
     const data = await api('search', params);
     const have = new Set(deck().map(x => x.id)), keys = new Set();
     for (const r of (data && data.results) || []) {
       const it = fromApi(r);
-      if (!it || have.has(it.id) || !passCat(cat, it, cat.wg)) continue;
-      if (it.k === 'song' && (!it.prev || BAD_SONG.test(it.title))) continue;
-      const key = it.k === 'song' ? baseTitle(it.title) + '|' + norm(it.by) : movieKey(it.title);
+      if (!it || it.k !== 'song' || !it.prev || have.has(it.id) || BAD_SONG.test(it.title) || !passCat(cat, it, cat.wg)) continue;
+      const key = baseTitle(it.title) + '|' + norm(it.by);
       if (keys.has(key)) continue; keys.add(key);
       list.push(it);
       if (list.length >= WORD_TAKE) break;
@@ -940,7 +965,8 @@ function loadSnapshot(code) {
   for (const [uid, v] of Object.entries(s.votes || {})) S.votes[uid] = { uid, name: str(v.name, 24), votes: cleanVotes(v.votes), t: +v.t || 0 };
   for (const [uid, p] of Object.entries(s.presence || {})) S.presence[uid] = { uid, name: str(p.name, 24), online: false, at: '', t: 0, seen: 0 };
   S.tonight = s.tonight && typeof s.tonight.id === 'string' ? s.tonight : null;
-  S.cat = s.cat && CAT[s.cat.id] ? { id: s.cat.id, by: str(s.cat.by, 24), t: +s.cat.t || 0 } : null;
+  const cid = s.cat && catId(s.cat.id);
+  S.cat = cid ? { id: cid, by: str(s.cat.by, 24), t: +s.cat.t || 0 } : null;
   S.seen = new Set(Array.isArray(s.seen) ? s.seen : []);
   S.matchedAt = s.matchedAt && typeof s.matchedAt === 'object' ? s.matchedAt : {};
   if (S.votes[me.uid]) S.votes[me.uid].name = me.name;
@@ -1038,12 +1064,13 @@ function onMsg(topic, payload) {
     S.tonight = { id: str(d.id, 24), by: str(d.by, 24), t: +d.t || 0 };
     changed();
   } else if (kind === 'cat' && !a) {
-    if (!CAT[d.id] || (S.cat && (+d.t || 0) <= S.cat.t)) return;
+    const cid = catId(d.id);
+    if (!cid || (S.cat && (+d.t || 0) <= S.cat.t)) return;
     const was = S.cat && S.cat.id;
-    S.cat = { id: d.id, by: str(d.by, 24), t: +d.t || 0 };
-    if (was !== d.id) {
+    S.cat = { id: cid, by: str(d.by, 24), t: +d.t || 0 };
+    if (was !== cid) {
       F.since = Date.now(); chipKindManual = null;
-      if (S.primed && S.cat.by !== me.uid) toast(`${nameOf(S.cat.by)} ha cambiado a «${CAT[d.id].name}»`);
+      if (S.primed && S.cat.by !== me.uid) toast(`${nameOf(S.cat.by)} ha cambiado a «${CAT[cid].name}»`);
     }
     changed();
   }
@@ -1095,10 +1122,9 @@ async function pump() {
   try {
     while (curCat() === cat && !F.exhausted[cat.id] && lowBuffer(cat.id) < TARGET && apiCalls - calls0 < 8) {
       const n = nextFree(cat.id);
-      const plan = planPage(cat, n);
-      if (!plan) { F.exhausted[cat.id] = true; break; }
       claim(cat.id, n);
-      const items = await buildPage(cat, plan, n);
+      const items = await buildPage(cat, n);
+      if (!items) { F.exhausted[cat.id] = true; break; }
       const pg = { cat: cat.id, n, items, t: Date.now() };
       if (acceptPage(pg, false)) publishPage(S.pages[cat.id + '/' + n]);
       F.last[cat.id] = Date.now();
@@ -1610,7 +1636,7 @@ function openCats(kind) {
       grid.append(h('button', { class: 'mazo' + (on ? ' on' : ''), type: 'button', 'aria-pressed': String(on),
         onclick: () => { setCat(c.id); closeSheet(); afterFirstCat(); } },
         h('span', { class: 'glyph', 'aria-hidden': 'true' }, k === 'song' ? '♪' : '▶'),
-        h('span', { class: 'm' }, on ? 'Ahora mismo' : `${c.src.length} ${k === 'song' ? 'artistas' : 'directores'}${c.wg || c.maxYear ? ' y más' : ''}`),
+        h('span', { class: 'm' }, on ? 'Ahora mismo' : k === 'song' ? `${c.src.length} artistas${c.wg ? ' y más' : ''}` : 'Las más vistas'),
         h('span', { class: 'n', text: c.name }), h('span', { class: 'b', text: c.blurb })));
     }
   };
@@ -1645,10 +1671,19 @@ function openPropose(kind = 'song') {
     t = setTimeout(async () => {
       results.replaceChildren(h('p', { class: 'muted-note' }, 'Buscando…'));
       try {
-        const data = await api('search', k === 'song' ? { term, media: 'music', entity: 'song', limit: 15 } : { term, media: 'movie', entity: 'movie', limit: 15 },
-          { priority: true, stale: () => seq !== searchSeq });
+        const opt = { priority: true, stale: () => seq !== searchSeq };
+        const found = (data, kk) => ((data && data.results) || []).map(fromApi).filter(it => it && it.k === kk).slice(0, 15);
+        let items = [];
+        if (k === 'song') items = found(await api('search', { term, media: 'music', entity: 'song', limit: 15 }, opt), 'song');
+        else {
+          // Pelis: Apple solo las devuelve en la búsqueda general; México da títulos en español y EE. UU. encuentra más.
+          const all = [];
+          for (const country of ['MX', 'US']) { all.push(...found(await api('search', { term, media: 'all', limit: 100, country }, opt), 'movie')); if (seq !== searchSeq) break; }
+          const t = norm(term), score = it => { const x = norm(it.title); return x === t ? 0 : x.includes(t) ? 1 : 2; }, seenK = new Set();
+          items = all.map((it, i) => [it, score(it), i]).sort((x, y) => x[1] - y[1] || x[2] - y[2]).map(x => x[0])
+            .filter(it => { const key = movieKeyOf(it); if (seenK.has(key)) return false; seenK.add(key); return true; }).slice(0, 15);
+        }
         if (seq !== searchSeq) return;
-        const items = ((data && data.results) || []).map(fromApi).filter(it => it && it.k === k);
         if (!items.length) { results.replaceChildren(h('p', { class: 'muted-note' }, 'Nada con ese nombre. Prueba con otra forma de escribirlo.')); return; }
         results.replaceChildren(...items.map(resultRow));
         updatePlayUI();

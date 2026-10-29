@@ -125,6 +125,17 @@ img{max-width:100%}
 
 /* ---------- Swipe column ---------- */
 .swipe{min-height:0;display:flex;flex-direction:column;padding-block:8px 12px;padding-left:var(--gutter-l);padding-right:var(--gutter-r)}
+.catbar{display:flex;align-items:center;gap:8px;min-width:0;margin-bottom:8px}
+.kind{display:flex;flex:none;gap:2px;padding:3px;border-radius:999px;background:var(--velvet)}
+.kind button{width:38px;height:30px;border-radius:999px;display:grid;place-items:center;color:var(--faint);transition:background .2s,color .2s}
+.kind button svg{width:17px;height:17px}
+.kind button[aria-pressed="true"]{background:var(--velvet-2);color:var(--gold)}
+.chips{position:relative;flex:1;min-width:0;display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;padding:2px 28px 2px 2px;-webkit-mask-image:linear-gradient(90deg,#000 calc(100% - 28px),transparent);mask-image:linear-gradient(90deg,#000 calc(100% - 28px),transparent)}
+.chips::-webkit-scrollbar{display:none}
+.chip{flex:none;height:32px;padding:0 13px;border-radius:999px;font-size:13.5px;font-weight:600;color:var(--muted);box-shadow:inset 0 0 0 1px var(--line);white-space:nowrap;transition:background .2s,color .2s,box-shadow .2s}
+.chip:hover{color:var(--ink);box-shadow:inset 0 0 0 1px var(--muted)}
+.chip[aria-pressed="true"]{background:var(--gold);color:var(--gold-ink);box-shadow:none}
+.chip.more{color:var(--ink);background:var(--velvet-2);box-shadow:none}
 .partner-line{min-height:22px;font-size:13.5px;color:var(--muted);display:flex;align-items:center;justify-content:center;gap:8px;text-align:center;flex-wrap:wrap}
 .partner-line b{color:var(--ink);font-weight:600}
 .partner-line .linkbtn{color:var(--gold);font-weight:600;text-decoration:underline;text-underline-offset:3px}
@@ -253,8 +264,8 @@ img{max-width:100%}
 .mazo{position:relative;min-height:118px;border-radius:16px;padding:14px;text-align:left;display:flex;flex-direction:column;justify-content:flex-end;gap:4px;background:var(--night);box-shadow:inset 0 0 0 1px var(--line);overflow:hidden;transition:box-shadow .2s,transform .15s}
 .mazo:hover{box-shadow:inset 0 0 0 1.5px var(--gold)}
 .mazo:active{transform:scale(.98)}
-.mazo:disabled{opacity:.55;cursor:default;box-shadow:inset 0 0 0 1px var(--line)}
-.mazo .n{font-family:var(--f-display);font-weight:800;font-size:23px;hyphens:auto;overflow-wrap:break-word;line-height:.95;text-transform:uppercase;text-wrap:balance}
+.mazo.on{box-shadow:inset 0 0 0 2px var(--gold)}
+.mazo .n{font-family:var(--f-display);font-weight:800;font-size:21px;hyphens:auto;overflow-wrap:break-word;line-height:.95;text-transform:uppercase;text-wrap:balance}
 .mazo .b{font-size:12.5px;color:var(--muted);line-height:1.3}
 .mazo .m{position:relative;margin-bottom:auto;padding-bottom:12px;font-family:var(--f-mono);font-size:9.5px;letter-spacing:.12em;color:var(--gold);text-transform:uppercase}
 .mazo .glyph{position:absolute;right:-6px;top:-12px;font-family:var(--f-display);font-weight:900;font-size:86px;line-height:1;color:rgba(255,191,60,.08);pointer-events:none}
@@ -376,7 +387,7 @@ img{max-width:100%}
 
       <ol class="steps">
         <li><span><b>Crea una sala</b> y pásale el enlace a tu pareja.</span></li>
-        <li><span><b>Deslizad a la vez:</b> a la derecha si te gusta, a la izquierda si no. Cada uno a su ritmo.</span></li>
+        <li><span><b>Elegid una categoría</b> y deslizad a la vez: a la derecha si te gusta, a la izquierda si no. Las cartas no se acaban.</span></li>
         <li><span><b>Si coincidís,</b> la canción va a vuestra playlist y la peli, a la noche.</span></li>
       </ol>
     </div>
@@ -397,6 +408,7 @@ img{max-width:100%}
     </nav>
     <div class="main" id="main" data-tab="swipe">
       <section class="swipe" aria-label="Votar">
+        <div class="catbar" id="catbar"></div>
         <div class="partner-line" id="partnerLine" aria-live="polite"></div>
         <div class="stage" id="stage">
           <div class="deck" id="deck"></div>
@@ -447,46 +459,73 @@ const CODE_RE = /^[A-HJ-NP-Z2-9]{6}$/;
 const CODE_ALPHA = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
 const SILENT = 'data:audio/wav;base64,UklGRnQAAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YVAAAACAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgA==';
 
-const MAZOS = [
-  { id: 'gritos', k: 'song', name: 'Para cantar a gritos', blurb: 'Himnos que os sabéis de memoria',
-    seeds: ['Queen', 'ABBA', 'Mecano', 'Estopa', 'Bon Jovi', 'Amaral', 'El Canto del Loco', 'Whitney Houston', 'La Oreja de Van Gogh'] },
-  { id: 'popes', k: 'song', name: 'Pop español', blurb: 'De Alborán a Aitana',
-    seeds: ['Pablo Alborán', 'Aitana', 'Leiva', 'Dani Martín', 'Alejandro Sanz', 'Vanesa Martín', 'Manuel Carrasco', 'Lola Índigo', 'Melendi'] },
-  { id: 'ahora', k: 'song', name: 'Lo que suena ahora', blurb: 'Pop internacional reciente',
-    seeds: ['Dua Lipa', 'The Weeknd', 'Sabrina Carpenter', 'Harry Styles', 'Taylor Swift', 'Billie Eilish', 'Bruno Mars', 'Coldplay', 'Chappell Roan'] },
-  { id: 'indie', k: 'song', name: 'Indie y alternativo', blurb: 'Festival en el salón',
-    seeds: ['Vetusta Morla', 'Arctic Monkeys', 'Love of Lesbian', 'Tame Impala', 'Izal', 'Florence + The Machine', 'Phoenix', 'Viva Suecia', 'The Strokes'] },
-  { id: 'rock', k: 'song', name: 'Rock de siempre', blurb: 'Guitarras que no caducan',
-    seeds: ['The Beatles', 'Fleetwood Mac', 'Dire Straits', 'The Rolling Stones', 'AC/DC', 'Led Zeppelin', 'Héroes del Silencio', 'The Police', 'Bruce Springsteen'] },
-  { id: 'latino', k: 'song', name: 'Latino', blurb: 'Para bailar en la cocina',
-    seeds: ['Rosalía', 'Bad Bunny', 'Karol G', 'Shakira', 'Juanes', 'Rauw Alejandro', 'Juan Luis Guerra', 'C. Tangana', 'Morat'] },
-  { id: 'sofa', k: 'song', name: 'Para el sofá', blurb: 'Acústico, suave, de mantita',
-    seeds: ['Norah Jones', 'Jack Johnson', 'Ben Howard', 'Sade', 'Rozalén', 'Bon Iver', 'Jorge Drexler', 'Corinne Bailey Rae', 'Ed Sheeran'] },
-  { id: 'bso', k: 'song', name: 'Bandas sonoras', blurb: 'La música de vuestras pelis',
-    seeds: ['Hans Zimmer', 'John Williams', 'Ennio Morricone', 'Ludovico Einaudi', 'Alexandre Desplat', 'Justin Hurwitz', 'Howard Shore', 'Ramin Djawadi'] },
+// Categorías. Cada una tira de una lista de artistas (canciones) o directores (pelis) y, cuando se agota,
+// de búsquedas por palabras filtradas por género. Las páginas son deterministas por sala, así que los dos
+// móviles ven las mismas cartas en el mismo orden.
+const L = s => s.split('|').map(x => x.trim()).filter(Boolean);
+const CATS = [
+  { id: 's-popes', k: 'song', name: 'Pop español', short: 'Pop español', blurb: 'De Alborán a Aitana', wg: /pop/,
+    src: L(`Pablo Alborán|Aitana|Leiva|Dani Martín|Alejandro Sanz|Vanesa Martín|Manuel Carrasco|Lola Índigo|Melendi|Amaral|La Oreja de Van Gogh|El Canto del Loco|Estopa|Mecano|David Bisbal|Malú|Antonio Orozco|Pablo López|Rozalén|Ana Mena|Álex Ubago|Hombres G|Dvicio|Beret|Sergio Dalma|Nena Daconte|Café Quijano|Taburete|Marlon|Funambulista|Raphael|Miguel Bosé|Ana Belén|Rosana|Efecto Pasillo|Abraham Mateo`) },
+  { id: 's-pop', k: 'song', name: 'Pop internacional', short: 'Pop', blurb: 'De Dua Lipa a Coldplay', wg: /pop/,
+    src: L(`Dua Lipa|The Weeknd|Sabrina Carpenter|Harry Styles|Taylor Swift|Billie Eilish|Bruno Mars|Coldplay|Ed Sheeran|Adele|Olivia Rodrigo|Miley Cyrus|Lady Gaga|Rihanna|Ariana Grande|Justin Bieber|Chappell Roan|Shawn Mendes|Katy Perry|Maroon 5|OneRepublic|Imagine Dragons|Sia|Lewis Capaldi|Tate McRae|Benson Boone|Teddy Swims|Hozier|Noah Kahan|Doja Cat|Charli xcx|Lizzo|Jonas Brothers|Sam Smith|Ellie Goulding|James Arthur|Gracie Abrams`) },
+  { id: 's-rock', k: 'song', name: 'Rock', short: 'Rock', blurb: 'Guitarras que no caducan', wg: /rock|metal|punk/,
+    src: L(`The Beatles|Queen|Fleetwood Mac|Dire Straits|The Rolling Stones|AC/DC|Led Zeppelin|Héroes del Silencio|The Police|Bruce Springsteen|U2|Bon Jovi|Guns N' Roses|Pink Floyd|The Killers|Foo Fighters|Red Hot Chili Peppers|Nirvana|Pearl Jam|Oasis|Muse|Kings of Leon|The Who|The Doors|Eagles|Toto|Journey|Extremoduro|Fito & Fitipaldis|Marea|Platero y Tú|Loquillo|Los Rodríguez|Rosendo|Creedence Clearwater Revival|Aerosmith`) },
+  { id: 's-indie', k: 'song', name: 'Indie y alternativo', short: 'Indie', blurb: 'Festival en el salón', wg: /alternativ|indie/,
+    src: L(`Vetusta Morla|Arctic Monkeys|Love of Lesbian|Tame Impala|Izal|Florence + The Machine|Phoenix|Viva Suecia|The Strokes|Lori Meyers|Supersubmarina|Dorian|Sidonie|Los Planetas|Second|Miss Caffeina|Carolina Durante|Rigoberta Bandini|Zahara|Arcade Fire|The National|Vampire Weekend|MGMT|Two Door Cinema Club|Foster the People|The 1975|Glass Animals|alt-J|Franz Ferdinand|Kasabian|Cage the Elephant|Mumford & Sons|Of Monsters and Men|Lana Del Rey|Phoebe Bridgers|Wolf Alice|Ginebras|Arde Bogotá`) },
+  { id: 's-latino', k: 'song', name: 'Latino y reguetón', short: 'Latino', blurb: 'Para bailar en la cocina', wg: /latin|urban|regga|tropical|salsa|bachata/,
+    src: L(`Rosalía|Bad Bunny|Karol G|Shakira|Juanes|Rauw Alejandro|Juan Luis Guerra|C. Tangana|Morat|Daddy Yankee|J Balvin|Ozuna|Maluma|Feid|Myke Towers|Quevedo|Bizarrap|Sebastián Yatra|Camilo|Carlos Vives|Marc Anthony|Ricky Martin|Enrique Iglesias|Romeo Santos|Aventura|Prince Royce|Nicky Jam|Manuel Turizo|Tini|Becky G|Nathy Peluso|Peso Pluma|Grupo Frontera|Luis Fonsi|Danny Ocean|Mau y Ricky`) },
+  { id: 's-urbano', k: 'song', name: 'Hip hop y R&B', short: 'Hip hop y R&B', blurb: 'Del Bronx a Madrid', wg: /hip hop|rap|r and b|soul/,
+    src: L(`Kendrick Lamar|Drake|Eminem|Kanye West|Travis Scott|Post Malone|SZA|Frank Ocean|Beyoncé|Alicia Keys|Usher|Outkast|Jay-Z|50 Cent|Snoop Dogg|Dr. Dre|Lauryn Hill|Childish Gambino|Tyler, The Creator|J. Cole|Anderson .Paak|H.E.R.|Daniel Caesar|Khalid|Mac Miller|Kase.O|Nach|SFDK|Violadores del Verso|Mala Rodríguez|Rels B|Delaossa|Natos y Waor|Hoke`) },
+  { id: 's-dance', k: 'song', name: 'Electrónica y dance', short: 'Electrónica', blurb: 'Para subir el volumen', wg: /dance|electr|house|techno/,
+    src: L(`Daft Punk|Calvin Harris|David Guetta|Avicii|Disclosure|Fred again..|Swedish House Mafia|Martin Garrix|Kygo|Robin Schulz|The Chemical Brothers|Fatboy Slim|Moby|Justice|Bob Sinclar|Faithless|Basement Jaxx|Röyksopp|Bonobo|Jamie xx|Kaytranada|Peggy Gou|Purple Disco Machine|Major Lazer|Marshmello|Tiësto|Armin van Buuren|Deadmau5|Zedd|Clean Bandit|Duke Dumont|Meduza|Sofi Tukker|Fisher|Rüfüs Du Sol`) },
+  { id: 's-acustico', k: 'song', name: 'Acústico y cantautor', short: 'Acústico', blurb: 'Para el sofá con mantita', wg: /singer|songwriter|cantautor|folk|acoustic|acustic/,
+    src: L(`Norah Jones|Jack Johnson|Ben Howard|Rozalén|Jorge Drexler|Bon Iver|Joaquín Sabina|Joan Manuel Serrat|Ismael Serrano|Pedro Guerra|Luis Eduardo Aute|Silvio Rodríguez|Damien Rice|José González|Passenger|Vance Joy|Iron & Wine|Sufjan Stevens|Nick Drake|Simon & Garfunkel|Bob Dylan|Leonard Cohen|Tracy Chapman|James Taylor|Joni Mitchell|Cat Stevens|Corinne Bailey Rae|Kevin Johansen|Natalia Lafourcade|Andrés Suárez|Marwan|Tom Odell|Birdy|Angus & Julia Stone|The Paper Kites|Gregory Alan Isakov`) },
+  { id: 's-bso', k: 'song', name: 'Bandas sonoras', short: 'Bandas sonoras', blurb: 'La música de vuestras pelis', wg: /soundtrack|banda sonora|bandas sonoras|score|classical|clasica/,
+    src: L(`Hans Zimmer|John Williams|Ennio Morricone|Ludovico Einaudi|Alexandre Desplat|Justin Hurwitz|Howard Shore|Ramin Djawadi|Alan Silvestri|James Horner|Danny Elfman|Thomas Newman|Michael Giacchino|Joe Hisaishi|Yann Tiersen|Alberto Iglesias|Vangelis|Ryuichi Sakamoto|Max Richter|Jóhann Jóhannsson|Ludwig Göransson|Hildur Guðnadóttir|Gustavo Santaolalla|Nicholas Britell|Craig Armstrong|Clint Mansell|Harry Gregson-Williams|Klaus Badelt|Alan Menken|Lin-Manuel Miranda|Roque Baños|Lucas Vidal`) },
+  { id: 's-8090', k: 'song', name: 'Clásicos de los 80 y 90', short: '80 y 90', blurb: 'Lo que sonaba en la radio',
+    src: L(`Michael Jackson|Madonna|Whitney Houston|Prince|a-ha|Duran Duran|Tears for Fears|Depeche Mode|The Cure|Eurythmics|Cyndi Lauper|George Michael|Wham!|Simple Minds|INXS|Roxette|Bryan Adams|Phil Collins|Lionel Richie|Tina Turner|Spice Girls|Backstreet Boys|Britney Spears|TLC|Alanis Morissette|The Cranberries|R.E.M.|Ace of Base|Radio Futura|Alaska y Dinarama|Duncan Dhu|Nacha Pop|La Unión|Los Secretos|Celtas Cortos|Jarabe de Palo|Ketama|Modestia Aparte|Presuntos Implicados|OBK`) },
+  { id: 's-jazz', k: 'song', name: 'Jazz y soul', short: 'Jazz y soul', blurb: 'Voces de terciopelo', wg: /jazz|soul|blues|r and b|vocal|bossa/,
+    src: L(`Frank Sinatra|Ella Fitzgerald|Louis Armstrong|Nina Simone|Miles Davis|John Coltrane|Chet Baker|Billie Holiday|Diana Krall|Michael Bublé|Amy Winehouse|Etta James|Aretha Franklin|Otis Redding|Marvin Gaye|Stevie Wonder|Al Green|Bill Withers|Ray Charles|Sam Cooke|Gregory Porter|Jamie Cullum|Melody Gardot|Stacey Kent|Astrud Gilberto|João Gilberto|Antônio Carlos Jobim|Dave Brubeck|Duke Ellington|Nat King Cole|Tony Bennett|Leon Bridges|Michael Kiwanuka|Esperanza Spalding|Buika|Sade`) },
+  { id: 's-flamenco', k: 'song', name: 'Flamenco y rumba', short: 'Flamenco', blurb: 'Palmas en el salón', wg: /flamenco|world|mundo/,
+    src: L(`Camarón de la Isla|Paco de Lucía|Estrella Morente|Niña Pastori|Los Chunguitos|Peret|Gipsy Kings|Rosario|Chambao|Diego el Cigala|Las Grecas|El Barrio|Pitingo|Arcángel|Miguel Poveda|Antonio Carmona|Pata Negra|Kiko Veneno|Bambino|Lola Flores|Rocío Jurado|Raimundo Amador|Tomatito|Remedios Amaya|Delinqüentes|India Martínez|Lin Cortés|Manzanita|Siempre Así|Las Migas`) },
 
-  { id: 'palomitas', k: 'movie', name: 'Noche de palomitas', blurb: 'Taquillazos que nunca fallan',
-    seeds: [['Top Gun: Maverick', 2022], ['Interstellar', 2014], ['Gladiator', 2000], ['Jurassic Park', 1993], ['Regreso al futuro', 1985], ['Origen', 2010],
-            ['El caballero oscuro', 2008], ['Dune', 2021], ['Mad Max: Furia en la carretera', 2015], ['Misión: Imposible - Fallout', 2018], ['Piratas del Caribe: La maldición de la Perla Negra', 2003], ['Avatar', 2009]] },
-  { id: 'risas', k: 'movie', name: 'Para reír', blurb: 'Comedias para desconectar',
-    seeds: [['Campeones', 2018], ['Ocho apellidos vascos', 2014], ['Intocable', 2011], ['Mamma Mia!', 2008], ['El diablo viste de Prada', 2006], ['Cómo perder a un chico en 10 días', 2003],
-            ['Los padres de ella', 2000], ['Paddington 2', 2017], ['Puñales por la espalda', 2019], ['Solo en casa', 1990], ['Zoolander', 2001], ['La boda de mi mejor amigo', 1997]] },
-  { id: 'romance', k: 'movie', name: 'Romanticonas', blurb: 'De las de cogerse de la mano',
-    seeds: [['Notting Hill', 1999], ['Orgullo y prejuicio', 2005], ['Una cuestión de tiempo', 2013], ['La La Land', 2016], ['El diario de Noa', 2004], ['Pretty Woman', 1990],
-            ['Love Actually', 2003], ['Antes del amanecer', 1995], ['Crazy, Stupid, Love', 2011], ['Los puentes de Madison', 1995], ['Tres metros sobre el cielo', 2010], ['Cuando Harry encontró a Sally', 1989]] },
-  { id: 'clasicos', k: 'movie', name: 'Clásicos pendientes', blurb: 'Las que siempre decís que veréis',
-    seeds: [['El Padrino', 1972], ['Casablanca', 1942], ['Forrest Gump', 1994], ['Titanic', 1997], ['Cadena perpetua', 1994], ['La vida es bella', 1997],
-            ['E.T. el extraterrestre', 1982], ['Tiburón', 1975], ['Psicosis', 1960], ['Con faldas y a lo loco', 1959], ['Desayuno con diamantes', 1961], ['Rocky', 1976]] },
-  { id: 'espanol', k: 'movie', name: 'Cine español', blurb: 'De Almodóvar a Sorogoyen',
-    seeds: [['El laberinto del fauno', 2006], ['Mar adentro', 2004], ['Todo sobre mi madre', 1999], ['El orfanato', 2007], ['Celda 211', 2009], ['Contratiempo', 2016],
-            ['Los otros', 2001], ['As bestas', 2022], ['Volver', 2006], ['El secreto de sus ojos', 2009], ['Handia', 2017], ['Ahora o nunca', 2015]] },
-  { id: 'intriga', k: 'movie', name: 'Intriga y suspense', blurb: 'Para no mirar el móvil',
-    seeds: [['Seven', 1995], ['Perdida', 2014], ['Prisioneros', 2013], ['Shutter Island', 2010], ['El silencio de los corderos', 1991], ['Zodiac', 2007],
-            ['Memento', 2000], ['El sexto sentido', 1999], ['Sospechosos habituales', 1995], ['Insomnia', 2002], ['Drive', 2011], ['El fugitivo', 1993]] },
-  { id: 'animacion', k: 'movie', name: 'Animación', blurb: 'Pixar, Disney y compañía',
-    seeds: [['Coco', 2017], ['Up', 2009], ['Del revés', 2015], ['Toy Story', 1995], ['Buscando a Nemo', 2003], ['Shrek', 2001],
-            ['Spider-Man: Un nuevo universo', 2018], ['El rey león', 1994], ['Ratatouille', 2007], ['WALL-E', 2008], ['Los Increíbles', 2004], ['Zootrópolis', 2016]] },
+  { id: 'm-accion', k: 'movie', name: 'Acción y aventura', short: 'Acción', blurb: 'Palomitas a lo grande',
+    dg: /action|accion|aventur|adventure|sci fi|ciencia|fantas|thrill|suspens/, wg: /action|accion|aventur|adventure/,
+    src: L(`Christopher Nolan|James Cameron|Steven Spielberg|Ridley Scott|Denis Villeneuve|Christopher McQuarrie|Chad Stahelski|George Miller|Michael Bay|Tony Scott|John McTiernan|Joseph Kosinski|Doug Liman|Martin Campbell|Sam Raimi|Jon Favreau|Peter Jackson|Gore Verbinski|Matthew Vaughn|Guy Ritchie|David Leitch|J.J. Abrams|Justin Lin|Kathryn Bigelow|Paul Greengrass|Antoine Fuqua|Roland Emmerich|Robert Zemeckis|Anthony Russo|James Gunn|Zack Snyder|Jaume Collet-Serra|F. Gary Gray|Jon Watts|Taika Waititi|Patty Jenkins`) },
+  { id: 'm-comedia', k: 'movie', name: 'Comedia', short: 'Comedia', blurb: 'Para reír hasta llorar', dg: /comed/, wg: /comed/,
+    src: L(`Judd Apatow|Adam McKay|Todd Phillips|Paul Feig|Nancy Meyers|Richard Curtis|Edgar Wright|Wes Anderson|Taika Waititi|Jay Roach|Peter Farrelly|Ben Stiller|Harold Ramis|Ivan Reitman|John Hughes|Chris Columbus|Greg Mottola|Shawn Levy|Dennis Dugan|Frank Oz|Rob Reiner|Nora Ephron|Garry Marshall|Woody Allen|Santiago Segura|Javier Fesser|Emilio Martínez-Lázaro|Borja Cobeaga|Paco León|Nacho G. Velilla|Olivier Nakache|Dany Boon|Philippe de Chauveron|Jonathan Levine|Will Gluck|Rawson Marshall Thurber|Jake Kasdan|Seth Gordon`) },
+  { id: 'm-romance', k: 'movie', name: 'Romance', short: 'Romance', blurb: 'De las de cogerse de la mano',
+    dg: /romanc|romant|comed|drama/, wg: /romanc|romant/,
+    src: L(`Richard Curtis|Nancy Meyers|Nora Ephron|Garry Marshall|Nick Cassavetes|Richard Linklater|Joe Wright|Rob Reiner|Marc Webb|Damien Chazelle|Luca Guadagnino|Baz Luhrmann|Lasse Hallström|Michael Showalter|Jon M. Chu|Sofia Coppola|Wong Kar-wai|Céline Sciamma|Jean-Pierre Jeunet|Fernando González Molina|Mark Waters|Adam Shankman|Anne Fletcher|Ken Kwapis|Gary Winick|Lone Scherfig|Josh Boone|Andy Tennant|Drake Doremus|Mike Newell|Roger Michell|Nicholas Stoller|Dani de la Orden|Thea Sharrock`) },
+  { id: 'm-drama', k: 'movie', name: 'Drama', short: 'Drama', blurb: 'Para emocionarse juntos', dg: /drama|independ/, wg: /drama/,
+    src: L(`Martin Scorsese|Clint Eastwood|Ron Howard|Frank Darabont|Sam Mendes|Danny Boyle|Alejandro González Iñárritu|Alfonso Cuarón|Pedro Almodóvar|Paolo Sorrentino|Ang Lee|Barry Jenkins|Kenneth Lonergan|Tom McCarthy|Todd Field|Greta Gerwig|Noah Baumbach|Steve McQueen|Paul Thomas Anderson|Darren Aronofsky|Bennett Miller|Lenny Abrahamson|Jean-Marc Vallée|Tom Hooper|Stephen Daldry|Gus Van Sant|Jim Sheridan|Ken Loach|Asghar Farhadi|Hirokazu Kore-eda|Juan José Campanella|Bong Joon Ho|Florian Zeller|Martin McDonagh|Sian Heder|Chloé Zhao`) },
+  { id: 'm-thriller', k: 'movie', name: 'Thriller y suspense', short: 'Thriller', blurb: 'Para no mirar el móvil',
+    dg: /thrill|suspens|crime|crimen|myster|misterio|polic|drama|action|accion|horror|terror/, wg: /thrill|suspens|crime|crimen|myster|misterio/,
+    src: L(`David Fincher|Alfred Hitchcock|Denis Villeneuve|Brian De Palma|Jonathan Demme|Bong Joon Ho|Park Chan-wook|M. Night Shyamalan|Rodrigo Sorogoyen|Oriol Paulo|Alberto Rodríguez|Daniel Monzón|Enrique Urbizu|Rian Johnson|Ben Affleck|Curtis Hanson|Michael Mann|Sidney Lumet|Roman Polanski|Adrian Lyne|Paul Verhoeven|Jordan Peele|Taylor Sheridan|Nicolas Winding Refn|Steven Soderbergh|Tony Gilroy|Joel Coen|Fernando Meirelles|Luc Besson|Bryan Singer|Christopher Nolan|Wolfgang Petersen|Dan Gilroy|Jeremy Saulnier`) },
+  { id: 'm-terror', k: 'movie', name: 'Terror', short: 'Terror', blurb: 'Para ver con la luz encendida',
+    dg: /horror|terror|thrill|suspens|myster|misterio/, wg: /horror|terror/,
+    src: L(`James Wan|Mike Flanagan|Ari Aster|Jordan Peele|Robert Eggers|John Carpenter|Wes Craven|Sam Raimi|Guillermo del Toro|Juan Antonio Bayona|Jaume Balagueró|Paco Plaza|Alejandro Amenábar|Andy Muschietti|Fede Álvarez|Scott Derrickson|David F. Sandberg|Leigh Whannell|Ti West|Jennifer Kent|Osgood Perkins|Zach Cregger|Eli Roth|Tobe Hooper|William Friedkin|Hideo Nakata|Alexandre Aja|Jaume Collet-Serra|Nacho Vigalondo|Rodrigo Cortés|Kike Maíllo|Gore Verbinski|Stanley Kubrick|Roman Polanski`) },
+  { id: 'm-scifi', k: 'movie', name: 'Ciencia ficción y fantasía', short: 'Ciencia ficción', blurb: 'Otros mundos, mismo sofá',
+    dg: /sci fi|scifi|ciencia|fantas|action|accion|aventur|adventure/, wg: /sci fi|scifi|ciencia|fantas/,
+    src: L(`Denis Villeneuve|Christopher Nolan|Ridley Scott|James Cameron|Steven Spielberg|Peter Jackson|George Lucas|Alex Garland|Duncan Jones|Neill Blomkamp|Rian Johnson|J.J. Abrams|Robert Zemeckis|Lana Wachowski|Terry Gilliam|Luc Besson|Guillermo del Toro|Alfonso Cuarón|Spike Jonze|Michel Gondry|Andrew Niccol|Paul Verhoeven|John Carpenter|Chris Columbus|David Yates|Tim Burton|Joseph Kosinski|Gareth Edwards|Matt Reeves|Rupert Wyatt|Jeff Nichols|Brad Bird|Doug Liman|Morten Tyldum|Jon Favreau`) },
+  { id: 'm-animacion', k: 'movie', name: 'Animación y familia', short: 'Animación', blurb: 'Pixar, Disney, Ghibli y compañía',
+    dg: /anima|kids|famil|infantil|nino/, wg: /anima|kids|famil|infantil/,
+    src: L(`Pete Docter|John Lasseter|Brad Bird|Andrew Stanton|Lee Unkrich|Hayao Miyazaki|Chris Buck|Byron Howard|Rich Moore|Ron Clements|Chris Sanders|Dean DeBlois|Andrew Adamson|Pierre Coffin|Chris Renaud|Mike Mitchell|Kirk DeMicco|Nick Park|Henry Selick|Phil Lord|Domee Shi|Enrico Casarosa|Dan Scanlon|Peter Sohn|Jared Bush|Don Hall|Tom McGrath|Eric Darnell|Carlos Saldanha|Chris Wedge|Joel Crawford|Paul King|Genndy Tartakovsky|Isao Takahata|Makoto Shinkai|Tomm Moore|Mamoru Hosoda`) },
+  { id: 'm-espanol', k: 'movie', name: 'Cine español', short: 'Cine español', blurb: 'De Almodóvar a Sorogoyen',
+    src: L(`Pedro Almodóvar|Alejandro Amenábar|Juan Antonio Bayona|Rodrigo Sorogoyen|Javier Fesser|Isabel Coixet|Icíar Bollaín|Fernando Trueba|Álex de la Iglesia|Daniel Monzón|Alberto Rodríguez|Fernando León de Aranoa|Carla Simón|Oriol Paulo|Daniel Sánchez Arévalo|Emilio Martínez-Lázaro|Santiago Segura|Borja Cobeaga|Paco León|Cesc Gay|Julio Medem|Benito Zambrano|Montxo Armendáriz|José Luis Cuerda|Luis García Berlanga|Carlos Saura|Víctor Erice|Pilar Miró|Fernando Colomo|Gracia Querejeta|Agustí Villaronga|Jaime Rosales|Manuel Martín Cuenca|Jonás Trueba|Paula Ortiz|Dani de la Torre|Enrique Urbizu|Rodrigo Cortés|Jaume Balagueró|Paco Plaza|Juanma Bajo Ulloa|Mariano Barroso|David Trueba|Achero Mañas|Daniel Calparsoro|Juan Carlos Fresnadillo|Kike Maíllo|Nacho G. Velilla`) },
+  { id: 'm-clasicos', k: 'movie', name: 'Clásicos', short: 'Clásicos', blurb: 'Las que siempre decís que veréis', maxYear: 1995,
+    src: L(`Alfred Hitchcock|Billy Wilder|Stanley Kubrick|Francis Ford Coppola|Martin Scorsese|Steven Spielberg|Orson Welles|John Ford|Frank Capra|Michael Curtiz|David Lean|William Wyler|Elia Kazan|Sidney Lumet|Charles Chaplin|Fred Zinnemann|George Cukor|Howard Hawks|Ernst Lubitsch|Joseph L. Mankiewicz|Blake Edwards|Mike Nichols|Milos Forman|Robert Wise|Stanley Donen|John Huston|Sergio Leone|Federico Fellini|Akira Kurosawa|François Truffaut|Woody Allen|George Roy Hill|Richard Donner|Rob Reiner|Robert Zemeckis|Sydney Pollack|Luis Buñuel|Luis García Berlanga|Ridley Scott|James Cameron`) },
+  { id: 'm-musicales', k: 'movie', name: 'Musicales', short: 'Musicales', blurb: 'Para cantar en el sofá', wg: /music/,
+    src: L(`Damien Chazelle|Baz Luhrmann|Rob Marshall|Bill Condon|Tom Hooper|Michael Gracey|Jon M. Chu|Phyllida Lloyd|Adam Shankman|Kenny Ortega|Alan Parker|Bob Fosse|Robert Wise|Stanley Donen|Vincente Minnelli|Randal Kleiser|John Carney|Dexter Fletcher|Julie Taymor|Jason Moore|Emile Ardolino|Herbert Ross|Joel Schumacher|Ol Parker|Jacques Demy|Gene Kelly|George Sidney|Joshua Logan|Carlos Saura|Anne Fletcher`) },
 ];
+const CAT = Object.fromEntries(CATS.map(c => [c.id, c]));
+// Mazos de la primera versión → categoría en la que aparecen sus cartas
+const LEGACY = { gritos: 's-pop', popes: 's-popes', ahora: 's-pop', indie: 's-indie', rock: 's-rock', latino: 's-latino', sofa: 's-acustico', bso: 's-bso',
+  palomitas: 'm-accion', risas: 'm-comedia', romance: 'm-romance', clasicos: 'm-clasicos', espanol: 'm-espanol', intriga: 'm-thriller', animacion: 'm-animacion' };
+const WORDS = {
+  song: L(`amor|love|noche|night|corazón|heart|baby|vida|life|sol|fuego|fire|bailar|dance|sueño|dream|luna|moon|mar|ocean|cielo|sky|tiempo|time|loco|crazy|beso|kiss|calle|street|verano|summer|lluvia|rain|alma|soul|casa|home|mundo|world|libre|free|siempre|forever|solo|alone|juntos|together|camino|road|luz|light|ciudad|city|estrella|star|azul|blue|oro|gold|chica|girl|chico|boy|hoy|tonight|mañana|tomorrow|fiesta|party|canción|song|paraíso|paradise|ángel|angel|diablo|devil|dinero|money|rey|king|reina|queen|guerra|war|paz|peace|agua|water|viento|wind|flor|flower|bonita|beautiful|sentir|feel|correr|run|volar|fly|final|end|mentira|lie|verdad|truth|frío|cold|calor|heat|madrid|california|domingo|sunday|recuerdo|memory`),
+  movie: L(`amor|love|noche|night|muerte|death|casa|house|guerra|war|vida|life|hombre|man|mujer|woman|ciudad|city|rey|king|sangre|blood|sombra|shadow|secreto|secret|mundo|world|familia|family|perdido|lost|último|last|juego|game|oscuro|dark|tierra|earth|mar|sea|cielo|heaven|infierno|hell|fuego|fire|hielo|ice|estrella|star|sol|sun|luna|moon|día|day|tiempo|time|misión|mission|viaje|journey|camino|road|calle|street|isla|island|fantasma|ghost|monstruo|monster|venganza|revenge|corazón|heart|sueño|dream|hijo|son|hija|daughter|padre|father|madre|mother|hermano|brother|boda|wedding|navidad|christmas|verano|summer|escuela|school|policía|police|agente|agent|código|code|planeta|planet|robot|dragón|dragon|princesa|princess|bosque|forest|niño|kid|chica|girl|asesino|killer|diablo|devil|ángel|angel`),
+};
 
 const IC = {
   x: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round"><path d="M6.5 6.5l11 11M17.5 6.5l-11 11"/></svg>',
@@ -505,6 +544,8 @@ const IC = {
   ext: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 01-1 1H5a1 1 0 01-1-1V7a1 1 0 011-1h5"/></svg>',
   cards: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><rect x="8" y="3" width="12" height="16" rx="2"/><path d="M5 7v12a2 2 0 002 2h9"/></svg>',
   moon: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M20 14.5A8.5 8.5 0 019.5 4a8.5 8.5 0 1010.5 10.5z"/></svg>',
+  note: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18V5l11-2v13"/><circle cx="6.5" cy="18" r="2.5" fill="currentColor"/><circle cx="17.5" cy="16" r="2.5" fill="currentColor"/></svg>',
+  film: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M7 4v16M17 4v16M3 9h4M3 15h4M17 9h4M17 15h4"/></svg>',
   check: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>',
 };
 
@@ -540,7 +581,16 @@ function hash(s) { let x = 0; for (const c of String(s)) x = (x * 31 + c.charCod
 
 const store = {
   get(k, d) { try { const v = localStorage.getItem('aduo:' + k); return v == null ? d : JSON.parse(v); } catch { return d; } },
-  set(k, v) { try { localStorage.setItem('aduo:' + k, JSON.stringify(v)); } catch {} },
+  set(k, v) {
+    const val = JSON.stringify(v);
+    try { localStorage.setItem('aduo:' + k, val); }
+    catch {
+      try {
+        for (let i = localStorage.length - 1; i >= 0; i--) { const key = localStorage.key(i); if (key && key.startsWith('aduo:c:')) localStorage.removeItem(key); }
+        localStorage.setItem('aduo:' + k, val);
+      } catch {}
+    }
+  },
   del(k) { try { localStorage.removeItem('aduo:' + k); } catch {} },
 };
 
@@ -603,6 +653,7 @@ function jsonp(path, params) {
   });
 }
 const apiQueue = [];
+let apiCalls = 0;
 let apiLast = 0, apiPenalty = 0, apiPumping = false;
 function api(path, params, { priority = false, stale = null } = {}) {
   return new Promise((resolve, reject) => {
@@ -619,7 +670,7 @@ async function pumpApi() {
     if (apiLast + API_GAP + apiPenalty - Date.now() > 0) continue;
     const job = apiQueue.shift();
     if (job.stale && job.stale()) { job.reject(new Error('stale')); continue; }
-    apiLast = Date.now();
+    apiLast = Date.now(); apiCalls++;
     try { job.resolve(await jsonp(job.path, job.params)); apiPenalty = Math.max(0, apiPenalty - 3000); }
     catch (e) {
       job.tries++; apiPenalty = Math.min(30000, apiPenalty + 9000);
@@ -669,73 +720,152 @@ function cacheSet(k, v) { store.set('c:' + k, { t: Date.now(), v }); }
 
 const BAD_SONG = /(\blive\b|en directo|en vivo|remix|karaoke|instrumental version|\bdemo\b|ac[uú]stic|acoustic|radio edit|medley|commentary|interview|sped up|slowed)/i;
 const baseTitle = t => norm(String(t).replace(/\s*[\(\[].*?[\)\]]/g, '').replace(/\s+-\s+.*$/, ''));
-async function resolveArtist(artist) {
-  const key = 's:' + norm(artist);
-  const hit = cacheGet(key); if (hit) return hit.map(cleanItem).filter(Boolean);
-  const data = await api('search', { term: artist, media: 'music', entity: 'song', attribute: 'artistTerm', limit: 30 });
-  const want = norm(artist), seen = new Set(), out = [];
-  for (const r of (data && data.results) || []) {
-    if (r.kind !== 'song' || !r.previewUrl) continue;
-    if (!norm(r.artistName).includes(want)) continue;
-    if (BAD_SONG.test(r.trackName || '') || /(\blive\b|en directo|en vivo|karaoke)/i.test(r.collectionName || '')) continue;
-    const bt = baseTitle(r.trackName); if (!bt || seen.has(bt)) continue; seen.add(bt);
-    const it = fromApi(r); if (it) out.push(it);
-    if (out.length >= 8) break;
+const movieKey = t => norm(String(t).replace(/\s*[\(\[].*?[\)\]]/g, ''));
+const surname = name => { const w = norm(name).split(' ').filter(x => x.length >= 3); return w.length ? w[w.length - 1] : norm(name); };
+
+// Una sola petición por artista o director: se guarda la promesa (y en el navegador, el resultado).
+const memo = new Map();
+function cached(key, fn) {
+  if (memo.has(key)) return memo.get(key);
+  const hit = cacheGet(key);
+  const p = Array.isArray(hit) ? Promise.resolve(hit.map(cleanItem).filter(Boolean))
+    : fn().then(v => { cacheSet(key, v); return v; });
+  memo.set(key, p);
+  p.catch(() => memo.delete(key));
+  return p;
+}
+function resolveArtist(artist) {
+  return cached('a:' + norm(artist), async () => {
+    const data = await api('search', { term: artist, media: 'music', entity: 'song', attribute: 'artistTerm', limit: 50 });
+    const want = norm(artist), seen = new Set(), out = [];
+    for (const r of (data && data.results) || []) {
+      if (r.kind !== 'song' || !r.previewUrl) continue;
+      if (!norm(r.artistName).includes(want)) continue;
+      if (BAD_SONG.test(r.trackName || '') || /(\blive\b|en directo|en vivo|karaoke)/i.test(r.collectionName || '')) continue;
+      const bt = baseTitle(r.trackName); if (!bt || seen.has(bt)) continue; seen.add(bt);
+      const it = fromApi(r); if (it) out.push(it);
+      if (out.length >= 15) break;
+    }
+    return out;
+  });
+}
+function resolveDirector(name) {
+  return cached('d:' + norm(name), async () => {
+    const want = surname(name);
+    const pick = data => {
+      const seen = new Set(), withTrailer = [], without = [];
+      for (const r of (data && data.results) || []) {
+        if (r.kind !== 'feature-movie' || !norm(r.artistName).includes(want)) continue;
+        const key = movieKey(r.trackName); if (!key || seen.has(key)) continue; seen.add(key);
+        const it = fromApi(r); if (it) (it.prev ? withTrailer : without).push(it);
+      }
+      return withTrailer.concat(without).slice(0, 30);
+    };
+    let out = pick(await api('search', { term: name, media: 'movie', entity: 'movie', attribute: 'directorTerm', limit: 50 }));
+    if (!out.length) out = pick(await api('search', { term: name, media: 'movie', entity: 'movie', limit: 50 }));
+    return out;
+  });
+}
+
+/* ---- Generador de páginas (mismo resultado en los dos móviles) ---- */
+function seededRand(seed) {
+  let a = hash(seed) || 1;
+  return () => {
+    a = (a + 0x6D2B79F5) | 0;
+    let t = Math.imul(a ^ (a >>> 15), 1 | a);
+    t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
+}
+function chunkShuffle(arr, seed, size) {
+  const r = seededRand(seed), out = [];
+  for (let i = 0; i < arr.length; i += size) {
+    const c = arr.slice(i, i + size);
+    for (let j = c.length - 1; j > 0; j--) { const k = Math.floor(r() * (j + 1)); [c[j], c[k]] = [c[k], c[j]]; }
+    out.push(...c);
   }
-  cacheSet(key, out);
   return out;
 }
-async function resolveMovie(title, year) {
-  const key = 'm:' + norm(title) + ':' + year;
-  const hit = cacheGet(key); if (hit !== undefined) return hit ? cleanItem(hit) : null;
-  const data = await api('search', { term: title, media: 'movie', entity: 'movie', limit: 12 });
-  const t = norm(title);
-  let best = null, bestScore = 0;
-  for (const r of (data && data.results) || []) {
-    if (r.kind !== 'feature-movie') continue;
-    const rt = norm(r.trackName), ry = +String(r.releaseDate || '').slice(0, 4);
-    let s = rt === t ? 4 : (rt.includes(t) || t.includes(rt)) ? 2.6 : 0;
-    if (!s) { const tw = new Set(t.split(' ')); const hits = rt.split(' ').filter(w => tw.has(w)).length; if (hits / tw.size >= .6) s = 1.6; }
-    if (year && ry) s += ry === year ? 2 : Math.abs(ry - year) <= 1 ? 1 : -1.5;
-    if (r.previewUrl) s += .5;
-    if (s > bestScore) { bestScore = s; best = r; }
-  }
-  const it = bestScore >= 2.5 ? fromApi(best) : null;
-  cacheSet(key, it);
-  return it;
+const orderMemo = new Map();
+function orderFor(key, arr, size) { if (!orderMemo.has(key)) orderMemo.set(key, chunkShuffle(arr, key, size)); return orderMemo.get(key); }
+const srcOrder = cat => orderFor(S.code + '|s|' + cat.id, cat.src, 8);       // los más conocidos siguen saliendo antes
+const wordOrder = cat => orderFor(S.code + '|w|' + cat.id, WORDS[cat.k], 9999);
+
+const ROUND = 3, ROUNDS = 5, WORD_TAKE = 6, PASSES = 3, TARGET = 10;
+function planPage(cat, n) {
+  const src = srcOrder(cat), N = src.length, s1 = N * ROUNDS;
+  if (n < s1) return { stage: 1, who: src[n % N], round: Math.floor(n / N) };
+  if (!cat.wg && !cat.maxYear) return null;
+  const words = wordOrder(cat), m = n - s1, pass = Math.floor(m / words.length);
+  if (pass >= PASSES) return null;
+  return { stage: 2, word: words[m % words.length], pass };
 }
-function pick3(list) {
-  if (list.length <= 3) return list.slice();
-  const pool = shuffle(list.slice(1, 7));
-  return [list[0], pool[0], pool[1]];
+function passCat(cat, it, rx) {
+  if (it.k !== cat.k) return false;
+  if (rx && !rx.test(norm(it.genre))) return false;
+  if (cat.maxYear && (+it.year || 9999) > cat.maxYear) return false;
+  return true;
+}
+async function buildPage(cat, plan, n) {
+  let list = [];
+  if (plan.stage === 1) {
+    const all = await (cat.k === 'song' ? resolveArtist(plan.who) : resolveDirector(plan.who));
+    list = all.filter(it => passCat(cat, it, cat.dg)).slice(plan.round * ROUND, plan.round * ROUND + ROUND);
+  } else {
+    const params = cat.k === 'song' ? { term: plan.word, media: 'music', entity: 'song', limit: 50 } : { term: plan.word, media: 'movie', entity: 'movie', limit: 50 };
+    if (plan.pass) params.offset = plan.pass * 50;
+    const data = await api('search', params);
+    const have = new Set(deck().map(x => x.id)), keys = new Set();
+    for (const r of (data && data.results) || []) {
+      const it = fromApi(r);
+      if (!it || have.has(it.id) || !passCat(cat, it, cat.wg)) continue;
+      if (it.k === 'song' && (!it.prev || BAD_SONG.test(it.title))) continue;
+      const key = it.k === 'song' ? baseTitle(it.title) + '|' + norm(it.by) : movieKey(it.title);
+      if (keys.has(key)) continue; keys.add(key);
+      list.push(it);
+      if (list.length >= WORD_TAKE) break;
+    }
+  }
+  // Las 3 canciones de un mismo artista no salen seguidas: se reparten entre las páginas siguientes.
+  return list.map((it, i) => ({ ...it, p: 0, o: plan.stage === 1 ? (n + i * 7) * 10 + i : n * 10 + i, src: cat.id }));
 }
 
 /* =====================================================================
    Estado compartido
    ===================================================================== */
 const S = {
-  code: null, contrib: {}, votes: {}, presence: {}, tonight: null,
-  loading: 0, seen: new Set(), matchedAt: {}, primed: false, fresh: false,
+  code: null, pages: {}, props: {}, contrib: {}, votes: {}, presence: {}, tonight: null, cat: null,
+  seen: new Set(), matchedAt: {}, primed: false, fresh: false,
 };
+const F = { busy: false, ready: false, err: 0, exhausted: {}, last: {}, claims: {}, pageSets: {}, since: 0, soon: 0 };
 const hist = [];
-function mine() { return S.contrib[me.uid] || (S.contrib[me.uid] = { uid: me.uid, items: [], mazos: [], t: 0 }); }
+let chipKindManual = null;
 function myVoteRec() { return S.votes[me.uid] || (S.votes[me.uid] = { uid: me.uid, name: me.name, votes: {}, t: 0 }); }
 const myVotes = () => myVoteRec().votes;
+function myProps() { return S.props[me.uid] || (S.props[me.uid] = { uid: me.uid, items: [], t: 0 }); }
+const curCat = () => (S.cat && CAT[S.cat.id]) || null;
+const pageSet = c => F.pageSets[c] || (F.pageSets[c] = new Set());
 
 let deckCache = null;
 const invalidate = () => { deckCache = null; };
 function deck() {
   if (deckCache) return deckCache;
   const map = new Map();
-  for (const c of Object.values(S.contrib)) for (const it of c.items || []) {
+  const add = (it, cat, from) => {
     const prev = map.get(it.id);
-    if (!prev || it.p > prev.p) map.set(it.id, { ...it, from: c.uid });
-  }
+    if (!prev) { map.set(it.id, { ...it, cats: new Set(cat ? [cat] : []), from }); return; }
+    if (cat) prev.cats.add(cat);
+    if (it.p && !prev.p) { prev.p = 1; prev.from = from; prev.o = it.o; }
+  };
+  for (const c of Object.values(S.contrib)) for (const it of c.items || []) add(it.p ? it : { ...it, o: it.o - 1e13 }, LEGACY[it.src] || null, c.uid);
+  for (const pg of Object.values(S.pages)) for (const it of pg.items) add(it, pg.cat, null);
+  for (const pr of Object.values(S.props)) for (const it of pr.items) add({ ...it, p: 1 }, null, pr.uid);
   deckCache = [...map.values()].sort((a, b) => (b.p - a.p) || (a.o - b.o) || (a.id < b.id ? -1 : 1));
   return deckCache;
 }
 const itemById = id => deck().find(x => x.id === id) || null;
-const unvoted = () => { const v = myVotes(); return deck().filter(it => v[it.id] === undefined); };
+function catList() { const c = curCat(); return deck().filter(it => it.p || (c && it.cats.has(c.id))); }
+const unvoted = () => { const v = myVotes(); return catList().filter(it => v[it.id] === undefined); };
 let lastTop = null;
 // La carta que ya estás viendo no se cambia aunque llegue una propuesta con prioridad: entra justo después.
 function queueNow() {
@@ -744,6 +874,11 @@ function queueNow() {
   return list;
 }
 const curItem = () => queueNow()[0];
+function bufferFor(uid, catId) {
+  const v = (S.votes[uid] && S.votes[uid].votes) || {};
+  let n = 0; for (const it of deck()) if (!it.p && it.cats.has(catId) && v[it.id] === undefined) n++;
+  return n;
+}
 function tally(id) {
   let likes = 0, nopes = 0; const likers = [], nopers = [];
   for (const [uid, rec] of Object.entries(S.votes)) {
@@ -780,15 +915,32 @@ function saveSoon() {
     if (!S.code) return;
     const presence = {};
     for (const [uid, p] of Object.entries(S.presence)) presence[uid] = { uid, name: p.name, online: false, at: '', t: 0, seen: 0 };
-    store.set('room:' + S.code, { contrib: S.contrib, votes: S.votes, presence, tonight: S.tonight, seen: [...S.seen], matchedAt: S.matchedAt, at: Date.now() });
-  }, 500);
+    store.set('room:' + S.code, { v: 2, pages: S.pages, props: S.props, contrib: S.contrib, votes: S.votes, presence, tonight: S.tonight, cat: S.cat,
+      seen: [...S.seen], matchedAt: S.matchedAt, at: Date.now() });
+  }, 800);
+}
+function acceptPage(d, remote) {
+  if (!d || typeof d !== 'object' || !CAT[d.cat]) return false;
+  const n = Number(d.n); if (!Number.isInteger(n) || n < 0 || n > 200000) return false;
+  const k = CAT[d.cat].k, key = d.cat + '/' + n;
+  const items = (Array.isArray(d.items) ? d.items.slice(0, 12) : []).map(cleanItem).filter(x => x && x.k === k).map(x => ({ ...x, p: 0 }));
+  pageSet(d.cat).add(n);
+  if (remote) F.last[d.cat] = Date.now();
+  const prev = S.pages[key];
+  if (prev && prev.items.length >= items.length) return false;
+  S.pages[key] = { cat: d.cat, n, items, t: +d.t || Date.now() };
+  invalidate();
+  return true;
 }
 function loadSnapshot(code) {
   const s = store.get('room:' + code, null); if (!s) return;
-  for (const [uid, c] of Object.entries(s.contrib || {})) S.contrib[uid] = { uid, items: (c.items || []).map(cleanItem).filter(Boolean), mazos: Array.isArray(c.mazos) ? c.mazos.slice(0, 40) : [], t: +c.t || 0 };
+  for (const [uid, c] of Object.entries(s.contrib || {})) S.contrib[uid] = { uid, items: (c.items || []).map(cleanItem).filter(Boolean), t: +c.t || 0 };
+  for (const pg of Object.values(s.pages || {})) acceptPage(pg, false);
+  for (const [uid, pr] of Object.entries(s.props || {})) S.props[uid] = { uid, items: (pr.items || []).map(cleanItem).filter(Boolean).map(x => ({ ...x, p: 1 })), t: +pr.t || 0 };
   for (const [uid, v] of Object.entries(s.votes || {})) S.votes[uid] = { uid, name: str(v.name, 24), votes: cleanVotes(v.votes), t: +v.t || 0 };
   for (const [uid, p] of Object.entries(s.presence || {})) S.presence[uid] = { uid, name: str(p.name, 24), online: false, at: '', t: 0, seen: 0 };
   S.tonight = s.tonight && typeof s.tonight.id === 'string' ? s.tonight : null;
+  S.cat = s.cat && CAT[s.cat.id] ? { id: s.cat.id, by: str(s.cat.by, 24), t: +s.cat.t || 0 } : null;
   S.seen = new Set(Array.isArray(s.seen) ? s.seen : []);
   S.matchedAt = s.matchedAt && typeof s.matchedAt === 'object' ? s.matchedAt : {};
   if (S.votes[me.uid]) S.votes[me.uid].name = me.name;
@@ -796,7 +948,7 @@ function loadSnapshot(code) {
 }
 function cleanVotes(v) {
   const out = {};
-  if (v && typeof v === 'object') for (const [k, x] of Object.entries(v).slice(0, 4000)) if (/^[sm]\d{1,15}$/.test(k) && (x === 1 || x === -1)) out[k] = x;
+  if (v && typeof v === 'object') for (const [k, x] of Object.entries(v).slice(0, 6000)) if (/^[sm]\d{1,15}$/.test(k) && (x === 1 || x === -1)) out[k] = x;
   return out;
 }
 function addRecent(code) {
@@ -837,41 +989,62 @@ function pub(sub, obj, retain = true) {
   for (const e of net.clients) if (e.up) { try { e.c.publish(net.base + sub, payload, { qos: 0, retain }); } catch {} }
 }
 function sendVotes() { const v = myVoteRec(); v.name = me.name; pub('votes/' + me.uid, { uid: me.uid, name: me.name, votes: v.votes, t: v.t }); }
-function publishVotes() { const v = myVoteRec(); v.t = Date.now(); sendVotes(); saveSoon(); }
-let contribT = 0;
-function sendContrib() { const c = mine(); pub('deck/' + me.uid, { uid: me.uid, items: c.items.map(({ from, ...x }) => x), mazos: c.mazos, t: c.t }); }
-function publishContrib() { mine().t = Date.now(); clearTimeout(contribT); contribT = setTimeout(sendContrib, 350); saveSoon(); }
+function publishVotes() { const v = myVoteRec(); v.t = Date.now(); sendVotes(); saveSoon(); pumpSoon(); }
+function sendProps() { const p = myProps(); pub('props/' + me.uid, { uid: me.uid, items: p.items.slice(-60), t: p.t }); }
+function publishProps() { myProps().t = Date.now(); sendProps(); saveSoon(); }
 let presT = 0;
 function sendPresence(online = true) { const cur = curItem(); pub('presence/' + me.uid, { uid: me.uid, name: me.name, online, at: cur ? cur.id : '', t: Date.now() }); }
-function publishPresenceSoon() { clearTimeout(presT); presT = setTimeout(sendPresence, 600); }
+function publishPresenceSoon() { if (!presT) presT = setTimeout(() => { presT = 0; sendPresence(); }, 500); }
 function publishTonight(id) { S.tonight = { id: id || '', by: me.uid, t: Date.now() }; pub('tonight', S.tonight); saveSoon(); render(); }
+function publishPage(pg) { pub(`page/${pg.cat}/${pg.n}`, { cat: pg.cat, n: pg.n, items: pg.items, t: pg.t }); }
 function onNetUp() {
   net.everUp = true;
-  const c = mine(); if (c.items.length || c.mazos.length) sendContrib();
+  if (myProps().items.length) sendProps();
   if (S.votes[me.uid]) sendVotes();
   sendPresence();
   if (S.tonight && S.tonight.by === me.uid) pub('tonight', S.tonight);
-  if (!S.primed) setTimeout(() => { S.primed = true; }, 3000);
+  if (S.cat && S.cat.by === me.uid) pub('cat', S.cat);
+  if (!S.primed) setTimeout(() => { S.primed = true; F.ready = true; changed(); }, 3000);
 }
 function onMsg(topic, payload) {
   if (!topic.startsWith(net.base) || payload.length > 400000) return;
   let d; try { d = JSON.parse(new TextDecoder().decode(payload)); } catch { return; }
   if (!d || typeof d !== 'object') return;
-  const [kind, uid] = topic.slice(net.base.length).split('/');
-  if (kind === 'deck' && uid && uid !== me.uid && d.uid === uid) {
-    const prev = S.contrib[uid]; if (prev && (+d.t || 0) < prev.t) return;
-    S.contrib[uid] = { uid, items: Array.isArray(d.items) ? d.items.slice(0, 800).map(cleanItem).filter(Boolean) : [], mazos: Array.isArray(d.mazos) ? d.mazos.filter(x => typeof x === 'string').slice(0, 40) : [], t: +d.t || 0 };
+  const [kind, a, b] = topic.slice(net.base.length).split('/');
+  if (kind === 'page' && a && b !== undefined) {
+    if (d.cat !== a || String(d.n) !== b) return;
+    if (acceptPage(d, true)) changed();
+  } else if (kind === 'claim' && a && CAT[a] && !b) {
+    const n = Number(d.n); if (!Number.isInteger(n) || d.uid === me.uid) return;
+    F.claims[a + '/' + n] = { uid: str(d.uid, 24), t: Date.now() }; F.last[a] = Date.now();
+  } else if (kind === 'props' && a && a !== me.uid && d.uid === a) {
+    const prev = S.props[a]; if (prev && (+d.t || 0) < prev.t) return;
+    S.props[a] = { uid: a, items: (Array.isArray(d.items) ? d.items.slice(0, 80) : []).map(cleanItem).filter(Boolean).map(x => ({ ...x, p: 1 })), t: +d.t || 0 };
     invalidate(); changed();
-  } else if (kind === 'votes' && uid && uid !== me.uid && d.uid === uid) {
-    const prev = S.votes[uid]; if (prev && (+d.t || 0) < prev.t) return;
-    S.votes[uid] = { uid, name: str(d.name, 24), votes: cleanVotes(d.votes), t: +d.t || 0 };
+  } else if (kind === 'deck' && a && d.uid === a) {
+    // Salas creadas con la primera versión: sus cartas se reparten en las categorías nuevas.
+    const prev = S.contrib[a]; if (prev && (+d.t || 0) < prev.t) return;
+    S.contrib[a] = { uid: a, items: (Array.isArray(d.items) ? d.items.slice(0, 800) : []).map(cleanItem).filter(Boolean), t: +d.t || 0 };
+    invalidate(); changed();
+  } else if (kind === 'votes' && a && a !== me.uid && d.uid === a) {
+    const prev = S.votes[a]; if (prev && (+d.t || 0) < prev.t) return;
+    S.votes[a] = { uid: a, name: str(d.name, 24), votes: cleanVotes(d.votes), t: +d.t || 0 };
     changed();
-  } else if (kind === 'presence' && uid && uid !== me.uid) {
-    S.presence[uid] = { uid, name: str(d.name, 24) || (S.presence[uid] && S.presence[uid].name) || '', online: !!d.online, at: str(d.at, 24), t: +d.t || 0, seen: Date.now() };
+  } else if (kind === 'presence' && a && a !== me.uid) {
+    S.presence[a] = { uid: a, name: str(d.name, 24) || (S.presence[a] && S.presence[a].name) || '', online: !!d.online, at: str(d.at, 24), t: +d.t || 0, seen: Date.now() };
     changed();
-  } else if (kind === 'tonight' && !uid) {
+  } else if (kind === 'tonight' && !a) {
     if (S.tonight && (+d.t || 0) <= S.tonight.t) return;
     S.tonight = { id: str(d.id, 24), by: str(d.by, 24), t: +d.t || 0 };
+    changed();
+  } else if (kind === 'cat' && !a) {
+    if (!CAT[d.id] || (S.cat && (+d.t || 0) <= S.cat.t)) return;
+    const was = S.cat && S.cat.id;
+    S.cat = { id: d.id, by: str(d.by, 24), t: +d.t || 0 };
+    if (was !== d.id) {
+      F.since = Date.now(); chipKindManual = null;
+      if (S.primed && S.cat.by !== me.uid) toast(`${nameOf(S.cat.by)} ha cambiado a «${CAT[d.id].name}»`);
+    }
     changed();
   }
 }
@@ -884,32 +1057,69 @@ function updateNet() {
 }
 
 /* =====================================================================
-   Mazos y propuestas
+   Cartas sin fin: un solo móvil pide a Apple y comparte cada página
    ===================================================================== */
-function addItems(items) {
-  const c = mine(); const have = new Set(deck().map(x => x.id)); let n = 0;
-  for (const it of items) if (it && !have.has(it.id)) { c.items.push(it); have.add(it.id); n++; }
-  if (n) { invalidate(); publishContrib(); changed(); }
+function amFetcher() { const ids = [me.uid, ...others().filter(p => p.online).map(p => p.uid)].sort(); return ids[0] === me.uid; }
+function lowBuffer(catId) {
+  let low = bufferFor(me.uid, catId);
+  for (const p of others()) if (p.online) low = Math.min(low, bufferFor(p.uid, catId));
+  return low;
 }
-function mazosInRoom() { const s = new Set(); for (const c of Object.values(S.contrib)) for (const m of c.mazos || []) s.add(m); return s; }
-function addMazo(m) {
-  const c = mine(); if (!c.mazos.includes(m.id)) c.mazos.push(m.id);
-  publishContrib();
-  const base = Date.now();
-  const seeds = shuffle(m.seeds.slice());
-  S.loading += seeds.length; changed();
-  seeds.forEach((seed, si) => {
-    const job = m.k === 'song'
-      ? resolveArtist(seed).then(list => pick3(list).map((it, r) => ({ ...it, o: base + r * 1000 + si, src: m.id })))
-      : resolveMovie(seed[0], seed[1]).then(it => it ? [{ ...it, o: base + si, src: m.id }] : []);
-    job.then(addItems).catch(() => {}).finally(() => { S.loading = Math.max(0, S.loading - 1); changed(); });
-  });
+function nextFree(catId) {
+  const have = pageSet(catId), now = Date.now();
+  for (let n = 0; ; n++) {
+    if (have.has(n)) continue;
+    const c = F.claims[catId + '/' + n];
+    if (c && c.uid !== me.uid && now - c.t < 20000) continue;
+    return n;
+  }
 }
+function claim(catId, n) {
+  F.claims[catId + '/' + n] = { uid: me.uid, t: Date.now() }; F.last[catId] = Date.now();
+  pub('claim/' + catId, { n, uid: me.uid, t: Date.now() }, false);
+}
+function pumpSoon(ms = 250) { clearTimeout(F.soon); F.soon = setTimeout(pump, ms); }
+async function pump() {
+  if (F.busy || !S.code || !F.ready) return;
+  if (F.err && Date.now() - F.err < 12000) return;
+  const cat = curCat(); if (!cat || F.exhausted[cat.id]) return;
+  if (lowBuffer(cat.id) >= TARGET) return;
+  if (!amFetcher()) {
+    // Normalmente pide cartas el otro móvil; solo entra este si se queda sin cartas y el otro no responde.
+    const starving = bufferFor(me.uid, cat.id) < 3;
+    const idle = Date.now() - Math.max(F.last[cat.id] || 0, F.since) > 9000;
+    if (!(starving && idle)) return;
+  }
+  F.busy = true; F.err = 0; render();
+  const calls0 = apiCalls;
+  try {
+    while (curCat() === cat && !F.exhausted[cat.id] && lowBuffer(cat.id) < TARGET && apiCalls - calls0 < 8) {
+      const n = nextFree(cat.id);
+      const plan = planPage(cat, n);
+      if (!plan) { F.exhausted[cat.id] = true; break; }
+      claim(cat.id, n);
+      const items = await buildPage(cat, plan, n);
+      const pg = { cat: cat.id, n, items, t: Date.now() };
+      if (acceptPage(pg, false)) publishPage(S.pages[cat.id + '/' + n]);
+      F.last[cat.id] = Date.now();
+      changed();
+    }
+  } catch (e) { F.err = Date.now(); }
+  finally { F.busy = false; changed(); }
+}
+function setCat(id) {
+  if (!CAT[id] || (S.cat && S.cat.id === id)) return;
+  S.cat = { id, by: me.uid, t: Date.now() }; F.since = Date.now(); chipKindManual = null;
+  pub('cat', S.cat); saveSoon();
+  changed();
+}
+
+/* ---- Propuestas ---- */
 function propose(it) {
   const v = myVotes();
   if (v[it.id] !== undefined) { toast(v[it.id] === 1 ? 'Esa ya te gustaba: está en la sala.' : 'Esa ya la habías descartado.'); return false; }
-  mine().items.push({ ...it, p: 1, o: Date.now(), src: 'prop' });
-  invalidate(); publishContrib();
+  myProps().items.push({ ...it, p: 1, o: Date.now(), src: 'prop' });
+  invalidate(); publishProps();
   v[it.id] = 1; hist.push(it.id); publishVotes();
   if (isMatch(it.id)) queueMatch(itemById(it.id));
   changed();
@@ -1019,10 +1229,10 @@ video.addEventListener('ended', updatePlayUI);
    Render
    ===================================================================== */
 let renderQueued = false;
-function changed() { saveSoon(); detectMatches(); if (!renderQueued) { renderQueued = true; requestAnimationFrame(() => { renderQueued = false; render(); }); } }
+function changed() { saveSoon(); detectMatches(); pumpSoon(); if (!renderQueued) { renderQueued = true; requestAnimationFrame(() => { renderQueued = false; render(); }); } }
 function render() {
   if (!S.code) return;
-  renderPeople(); renderPartnerLine(); renderTonightBar(); renderStage(); renderOurs(); updateNet(); updatePlayUI();
+  renderPeople(); renderCatbar(); renderPartnerLine(); renderTonightBar(); renderStage(); renderOurs(); updateNet(); updatePlayUI();
 }
 function renderPeople() {
   const box = $('#people'); box.replaceChildren();
@@ -1035,26 +1245,42 @@ function renderPeople() {
   }
   if (ps.length < 2) box.append(h('span', { class: 'avatar ghost', role: 'img', 'aria-label': 'Falta tu pareja', title: 'Falta tu pareja' }, '?'));
 }
+function renderCatbar() {
+  const bar = $('#catbar'); const cur = curCat();
+  const kind = chipKindManual || (cur ? cur.k : 'song');
+  const sig = kind + '|' + (cur ? cur.id : '');
+  if (bar.dataset.sig === sig) return;
+  bar.dataset.sig = sig;
+  const kindBtn = (k, label, ic) => h('button', { type: 'button', 'aria-pressed': String(kind === k), 'aria-label': label, title: label, icon: ic,
+    onclick: () => { chipKindManual = k; renderCatbar(); const f = $('#chips .chip'); if (f) f.focus({ preventScroll: true }); } });
+  const chips = h('div', { class: 'chips', id: 'chips', role: 'group', 'aria-label': kind === 'song' ? 'Categorías de canciones' : 'Categorías de pelis' },
+    CATS.filter(c => c.k === kind).map(c => h('button', { class: 'chip', type: 'button', 'aria-pressed': String(!!cur && cur.id === c.id), title: c.name,
+      onclick: () => setCat(c.id) }, c.short)),
+    h('button', { class: 'chip more', type: 'button', onclick: () => openCats(kind) }, 'Ver todas'));
+  bar.replaceChildren(h('div', { class: 'kind', role: 'group', 'aria-label': 'Tipo de cartas' }, kindBtn('song', 'Canciones', 'note'), kindBtn('movie', 'Películas', 'film')), chips);
+  const act = $('.chip[aria-pressed="true"]', chips);
+  if (act) requestAnimationFrame(() => { chips.scrollLeft = Math.max(0, act.offsetLeft - chips.clientWidth / 2 + act.offsetWidth / 2); });
+}
 function renderPartnerLine() {
   const line = $('#partnerLine'); line.replaceChildren();
-  const os = others(); const d = deck(); const cur = curItem();
+  const os = others();
   if (!os.length) {
     line.append(h('span', null, 'Esperando a tu pareja ·'), h('button', { class: 'linkbtn', type: 'button', onclick: openInvite }, 'Pásale el enlace'));
-  } else {
-    os.forEach((p, i) => {
-      if (i) line.append(h('span', null, '·'));
-      const v = (S.votes[p.uid] && S.votes[p.uid].votes) || {};
-      const done = d.filter(it => v[it.id] !== undefined).length;
-      let status;
-      if (!p.online) status = 'no está en la sala ahora';
-      else if (d.length && done >= d.length) status = 'ha votado todas';
-      else if (cur && p.at === cur.id) status = 'está en esta misma carta';
-      else if (d.length) status = `va por la ${Math.min(done + 1, d.length)} de ${d.length}`;
-      else status = 'está en la sala';
-      line.append(h('span', null, h('b', null, p.name), ' ' + status));
-    });
+    return;
   }
-  if (S.loading) line.append(h('span', null, '· cargando cartas…'));
+  const cur = curItem(); const list = catList();
+  os.forEach((p, i) => {
+    if (i) line.append(h('span', null, '·'));
+    let status;
+    if (!p.online) status = 'no está en la sala ahora';
+    else if (cur && p.at === cur.id) status = 'está en esta misma carta';
+    else {
+      const iMe = cur ? list.findIndex(x => x.id === cur.id) : -1, iP = p.at ? list.findIndex(x => x.id === p.at) : -1;
+      if (iMe >= 0 && iP >= 0) { const d = iP - iMe, a = Math.abs(d); status = `va ${a} ${a === 1 ? 'carta' : 'cartas'} por ${d > 0 ? 'delante' : 'detrás'}`; }
+      else status = 'está en la sala';
+    }
+    line.append(h('span', null, h('b', null, p.name), ' ' + status));
+  });
 }
 function renderTonightBar() {
   const bar = $('#tonightBar'); const it = S.tonight && S.tonight.id ? itemById(S.tonight.id) : null;
@@ -1097,42 +1323,44 @@ function buildCard(it) {
     h('div', { class: 'blocked', 'aria-hidden': 'true' }, h('span', { class: 'bigplay', icon: 'play' }), h('span', null, isM ? 'Toca para ver el tráiler' : 'Toca para escuchar')));
 }
 function stageMessage(kind) {
-  const os = others(); const d0 = deck();
-  const pendingNow = os.filter(p => { const v = (S.votes[p.uid] && S.votes[p.uid].votes) || {}; return d0.some(it => v[it.id] === undefined); }).map(p => p.name);
-  const sig = kind + '|' + os.map(p => p.name).join(',') + '|' + pendingNow.join(',');
+  const c = curCat();
+  const sig = kind + '|' + (c ? c.id : '');
   if (stageMsg.dataset.kind === sig) return;
   stageMsg.dataset.kind = sig; stageMsg.replaceChildren(); stageMsg.className = 'stage-msg';
-  if (kind === 'loading') {
+  const otherBtn = label => h('div', { class: 'row-btns' }, h('button', { class: 'btn btn-gold btn-sm', type: 'button', onclick: () => openCats() }, icon('cards'), label));
+  if (kind === 'loading' || kind === 'joining') {
     stageMsg.className = 'skeleton';
-    stageMsg.append(h('span', { class: 't' }, 'Buscando portadas, previews y tráilers…'), h('i', { style: 'width:70%' }), h('i', { style: 'width:45%' }));
-  } else if (kind === 'empty') {
-    stageMsg.append(h('h3', null, 'Elegid un mazo'),
-      h('p', null, os.length ? `Cualquiera de los dos puede elegirlo. Las cartas os salen a ${partnerLabel()} y a ti.` : 'Escoge canciones o pelis para empezar. Tu pareja verá las mismas cartas.'),
-      h('div', { class: 'row-btns' }, h('button', { class: 'btn btn-gold btn-sm', type: 'button', onclick: () => openMazos('song') }, icon('cards'), 'Elegir mazo')));
-  } else if (kind === 'done') {
-    const d = deck(); const pending = os.filter(p => { const v = (S.votes[p.uid] && S.votes[p.uid].votes) || {}; return d.some(it => v[it.id] === undefined); });
-    stageMsg.append(h('h3', null, 'Has votado todas'),
-      h('p', null, pending.length ? `${pending.map(p => p.name).join(' y ')} aún está votando. Los matches irán apareciendo en «Lo vuestro».` : 'Mirad lo que os ha salido en «Lo vuestro», o seguid con otro mazo.'),
-      h('div', { class: 'row-btns' },
-        h('button', { class: 'btn btn-gold btn-sm', type: 'button', onclick: () => openMazos(d.some(x => x.k === 'movie') && !d.some(x => x.k === 'song') ? 'movie' : 'song') }, icon('cards'), 'Otro mazo'),
-        h('button', { class: 'btn btn-ghost btn-sm', type: 'button', onclick: () => openPropose() }, icon('plus'), 'Proponer algo')));
+    stageMsg.append(h('span', { class: 't' }, kind === 'joining' ? 'Entrando en la sala…' : `Buscando ${c ? c.name.toLowerCase() : 'cartas'}…`),
+      h('i', { style: 'width:70%' }), h('i', { style: 'width:45%' }));
+  } else if (kind === 'nocat') {
+    stageMsg.append(h('h3', null, 'Elegid una categoría'),
+      h('p', null, 'Canciones o pelis. La que elijáis os sale a los dos, y las cartas no se acaban.'), otherBtn('Ver categorías'));
+  } else if (kind === 'error') {
+    stageMsg.append(h('h3', null, 'Apple no responde'),
+      h('p', null, 'Vuelvo a pedir cartas en unos segundos. Mientras, podéis probar otra categoría.'), otherBtn('Otra categoría'));
+  } else if (kind === 'exhausted') {
+    stageMsg.append(h('h3', null, `Se acabó ${c ? c.short : 'esta categoría'}`),
+      h('p', null, 'Habéis visto todo lo que hay en esta categoría. Probad otra.'), otherBtn('Otra categoría'));
   }
 }
 function renderStage() {
   const list = queueNow(); const cur = list[0], nxt = list[1];
-  for (const el of $$('.card:not(.leaving)', deckEl)) if (!(cur && el.dataset.id === cur.id) && !(nxt && el.dataset.id === nxt.id)) el.remove();
+  for (const el of $$('.card:not(.leaving)', deckEl)) {
+    if ((cur && el.dataset.id === cur.id) || (nxt && el.dataset.id === nxt.id)) continue;
+    if (el.contains(video)) { video.pause(); video.remove(); }
+    if (el.dataset.id === M.id && M.k === 'song' && !M.seq && !sheetOpen && !matchOpen) audio.pause();
+    el.remove();
+  }
+  ['#nopeBtn', '#likeBtn', '#playBtn'].forEach(s => { $(s).disabled = !cur; });
+  $('#undoBtn').disabled = !hist.length;
   if (!cur) {
     stageMsg.hidden = false;
-    stageMessage(S.loading ? 'loading' : deck().length ? 'done' : 'empty');
+    const c = curCat();
+    stageMessage(!c ? (F.ready ? 'nocat' : 'joining') : (F.exhausted[c.id] && !F.busy) ? 'exhausted' : (F.err && !F.busy) ? 'error' : 'loading');
     lastTop = null;
-    ['#nopeBtn', '#likeBtn', '#playBtn'].forEach(s => { $(s).disabled = true; });
-    $('#undoBtn').disabled = !hist.length;
-    if (M.id && $(`#deck .card[data-id="${M.id}"]`) == null && !sheetOpen && !matchOpen && M.k === 'song' && !M.seq) audio.pause();
     return;
   }
   stageMsg.hidden = true; stageMsg.dataset.kind = '';
-  ['#nopeBtn', '#likeBtn', '#playBtn'].forEach(s => { $(s).disabled = false; });
-  $('#undoBtn').disabled = !hist.length;
   [cur, nxt].forEach((it, i) => {
     if (!it) return;
     let el = deckEl.querySelector(`.card[data-id="${it.id}"]:not(.leaving)`);
@@ -1371,27 +1599,29 @@ function closeSheet() {
 $('#sheetClose').addEventListener('click', closeSheet);
 $('#scrim').addEventListener('click', closeSheet);
 
-function openMazos(kind = 'song') {
-  const inRoom = mazosInRoom();
+function openCats(kind) {
+  const cur = curCat();
+  kind = kind || (cur ? cur.k : 'song');
   const grid = h('div', { class: 'mazos' });
   const fill = k => {
     grid.replaceChildren();
-    for (const m of MAZOS.filter(x => x.k === k)) {
-      const added = inRoom.has(m.id);
-      grid.append(h('button', { class: 'mazo', type: 'button', disabled: added, onclick: () => { addMazo(m); closeSheet(); toast(`Preparando «${m.name}»…`); afterFirstMazo(); } },
+    for (const c of CATS.filter(x => x.k === k)) {
+      const on = !!cur && cur.id === c.id;
+      grid.append(h('button', { class: 'mazo' + (on ? ' on' : ''), type: 'button', 'aria-pressed': String(on),
+        onclick: () => { setCat(c.id); closeSheet(); afterFirstCat(); } },
         h('span', { class: 'glyph', 'aria-hidden': 'true' }, k === 'song' ? '♪' : '▶'),
-        h('span', { class: 'm' }, added ? 'Ya en la sala' : (k === 'song' ? `~${m.seeds.length * 3} canciones` : `${m.seeds.length} pelis`)),
-        h('span', { class: 'n', text: m.name }), h('span', { class: 'b', text: m.blurb })));
+        h('span', { class: 'm' }, on ? 'Ahora mismo' : `${c.src.length} ${k === 'song' ? 'artistas' : 'directores'}${c.wg || c.maxYear ? ' y más' : ''}`),
+        h('span', { class: 'n', text: c.name }), h('span', { class: 'b', text: c.blurb })));
     }
   };
   const seg = h('div', { class: 'seg', role: 'group', 'aria-label': 'Tipo' });
   const mk = (k, label) => h('button', { type: 'button', 'aria-pressed': String(k === kind), onclick: e => { $$('button', seg).forEach(b => b.setAttribute('aria-pressed', 'false')); e.currentTarget.setAttribute('aria-pressed', 'true'); fill(k); } }, label);
   seg.append(mk('song', 'Canciones'), mk('movie', 'Películas'));
   fill(kind);
-  openSheet('mazos', 'Elegid un mazo', h('div', { style: 'display:flex;flex-direction:column;gap:14px' }, seg, grid,
-    h('p', { class: 'muted-note' }, 'Las cartas se añaden a la sala para los dos. Podéis sumar más mazos cuando queráis.')));
+  openSheet('cats', 'Categorías', h('div', { style: 'display:flex;flex-direction:column;gap:14px' }, seg, grid,
+    h('p', { class: 'muted-note' }, 'La categoría es la misma para los dos: si uno la cambia, al otro también. Las cartas no se acaban; van llegando más mientras deslizáis.')));
 }
-function afterFirstMazo() {
+function afterFirstCat() {
   if (S.fresh && !others().length) { S.fresh = false; setTimeout(openInvite, 450); }
   S.fresh = false;
 }
@@ -1433,7 +1663,7 @@ function openPropose(kind = 'song') {
   run();
   openSheet('propose', 'Proponer algo', h('div', { style: 'display:flex;flex-direction:column;gap:14px' }, seg,
     h('div', { class: 'search-box' }, icon('search'), input), results,
-    h('button', { class: 'linkish', type: 'button', onclick: () => { closeSheet(); setTimeout(() => openMazos(k), 300); } }, 'O añade un mazo entero')));
+    h('button', { class: 'linkish', type: 'button', onclick: () => { closeSheet(); setTimeout(() => openCats(k), 300); } }, 'O cambiad de categoría')));
 }
 function resultRow(it) {
   const isM = it.k === 'movie';
@@ -1503,7 +1733,7 @@ function openSettings() {
     row('Reproducir al pasar de carta', 'Si estáis en el mismo sofá, dejadlo activo solo en un móvil.', 'autoplay'),
     row('Tráilers sin sonido', 'Se ven en silencio; el altavoz de la carta lo activa.', 'muted'),
     h('div', { style: 'display:flex;gap:8px;flex-wrap:wrap;margin-top:18px' },
-      h('button', { class: 'btn btn-ghost btn-sm', type: 'button', onclick: () => { closeSheet(); openMazos('song'); } }, icon('cards'), 'Añadir mazo'),
+      h('button', { class: 'btn btn-ghost btn-sm', type: 'button', onclick: () => { closeSheet(); openCats(); } }, icon('cards'), 'Cambiar categoría'),
       h('button', { class: 'btn btn-ghost btn-sm', type: 'button', onclick: leaveRoom }, 'Salir de la sala')),
     h('p', { class: 'muted-note', style: 'margin-top:16px' }, 'Atajos con teclado: → me gusta, ← paso, espacio reproduce, Z deshace.'),
     h('p', { class: 'muted-note', style: 'margin-top:8px' }, 'Portadas, previews de 30 s y tráilers: Apple. Las salas usan servidores públicos de mensajería; no pongáis datos personales en el nombre.')));
@@ -1542,7 +1772,7 @@ function takeName() {
 }
 function enterRoom(code, { fresh = false } = {}) {
   unlockMedia();
-  S.code = code; S.fresh = fresh;
+  S.code = code; S.fresh = fresh; F.ready = fresh;
   if (location.hash.slice(1).toUpperCase() !== code) history.replaceState(null, '', '#' + code);
   addRecent(code);
   loadSnapshot(code);
@@ -1551,8 +1781,10 @@ function enterRoom(code, { fresh = false } = {}) {
   document.title = 'A Dúo · ' + code;
   netConnect(code);
   render();
-  if (!deck().length && fresh) setTimeout(() => openMazos('song'), 280);
+  if (fresh) setTimeout(() => openCats('song'), 280);
+  setTimeout(() => { if (!F.ready) { F.ready = true; changed(); } }, 6000);
   setInterval(() => { if (netUp()) sendPresence(); render(); }, 25000);
+  setInterval(pump, 4000);
 }
 function leaveRoom() {
   try { sendPresence(false); } catch {}
@@ -1633,7 +1865,7 @@ document.addEventListener('keydown', e => {
 });
 
 initLobby();
-if (TEST) window.__aduo = { S, me, deck, unvoted, isMatch, M };
+if (TEST) window.__aduo = { S, F, me, deck, unvoted, catList, curCat, isMatch, M, get apiCalls() { return apiCalls; } };
 })();
 </script>
 </body>
